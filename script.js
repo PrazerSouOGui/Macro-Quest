@@ -1,4 +1,3 @@
-const ADMIN_EMAIL = 'guirafacunha@gmail.com';
 window._isAdmin = false;
 
 var _$_=id=>document.getElementById(id);

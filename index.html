@@ -757,6 +757,7 @@
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, onSnapshot, serverTimestamp, orderBy, limit, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -776,6 +777,13 @@
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+
+  // ── App Check (reCAPTCHA v3) ─────────────────────────
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6LeCcoksAAAAAC2wMpHGTEhBgIENx02JJFMVeGp5'),
+    isTokenAutoRefreshEnabled: true
+  });
+
   const auth = getAuth(app);
   const db = getFirestore(app);
 
