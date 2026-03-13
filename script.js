@@ -1764,7 +1764,7 @@ const LEVELS = [
   { lvl:9,  xpReq:6200, titulo:"Dragão do Macro",     tituloF:"Dragoa do Macro",    icon:"",  emoji:""  },
   { lvl:10, xpReq:9800, titulo:"Deus do Macro",        tituloF:"Deusa do Macro",     icon:"",  emoji:""  },
 ];
-const AVATARS = [
+var AVATARS = [
   { id:'rookie_m',   nome:'Novato',       custo:0,    lvlMin:1,  genero:'M' },
   { id:'rookie_f',   nome:'(F) Novata',       custo:0,    lvlMin:1,  genero:'F' },
   { id:'gym_m1',     nome:'Karateka',     custo:30,   lvlMin:2,  genero:'M' },
@@ -2530,7 +2530,7 @@ function drawAvatar(ctx, id, size=72) {
   }
   }
 }
-let xpData = {
+var xpData = {
   totalXP: 0,
   level: 1,
   xpThisLevel: 0,

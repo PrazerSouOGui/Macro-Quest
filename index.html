@@ -779,10 +779,14 @@
   const app = initializeApp(firebaseConfig);
 
   // ── App Check (reCAPTCHA v3) ─────────────────────────
-  initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider('6LeCcoksAAAAAC2wMpHGTEhBgIENx02JJFMVeGp5'),
-    isTokenAutoRefreshEnabled: true
-  });
+  // Só ativa em produção — reCAPTCHA não funciona em file://
+  const _isLocalFile = location.protocol === 'file:';
+  if (!_isLocalFile) {
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6LeCcoksAAAAAC2wMpHGTEhBgIENx02JJFMVeGp5'),
+      isTokenAutoRefreshEnabled: true
+    });
+  }
 
   const auth = getAuth(app);
   const db = getFirestore(app);

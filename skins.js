@@ -1,6 +1,6 @@
 // ── skins.js — Macro Quest ───────────────────────────────────────
 // Avatars disponíveis na loja de skins
-const AVATARS = [
+var AVATARS = [
   { id:'rookie_m',   nome:'Novato',       custo:0,    lvlMin:1,  genero:'M' },
   { id:'rookie_f',   nome:'(F) Novata',       custo:0,    lvlMin:1,  genero:'F' },
   { id:'gym_m1',     nome:'Karateka',     custo:30,   lvlMin:2,  genero:'M' },
@@ -768,32 +768,11 @@ function drawAvatar(ctx, id, size=72) {
   }
   }
 }
-let xpData = {
-  totalXP: 0,
-  level: 1,
-  xpThisLevel: 0,
-  playerName: 'GUERREIRO',
-  equippedAvatar: 'rookie_m',
-  unlockedAvatars: ['rookie_m'],
-  pendingLevelUp: false,
-  equippedTitle: null,
-  equippedBackground: null,
-  unlockedBackgrounds: ['bg_default'],
-};
 
-// ── Lista de fundos disponíveis ─────────────────────────────────
-// Para adicionar um fundo: preencha o campo 'img' com o caminho da imagem.
-// Ex: img: 'assets/backgrounds/floresta.png'
-const BACKGROUNDS = [
-  { id: 'bg_default',   nome: 'Padrão',         custo: 0,    lvlMin: 1,  img: null,                          desc: 'Fundo padrão escuro' },
-  { id: 'bg_dungeon',   nome: 'Masmorra',        custo: 200,  lvlMin: 2,  img: null /* 'assets/bg/dungeon.png' */,  desc: 'Pedras úmidas e tochas flamejantes' },
-  { id: 'bg_arena',     nome: 'Arena',           custo: 350,  lvlMin: 3,  img: null /* 'assets/bg/arena.png' */,   desc: 'O público clama por sangue' },
-  { id: 'bg_forest',    nome: 'Floresta Sombria',custo: 500,  lvlMin: 4,  img: null /* 'assets/bg/forest.png' */,  desc: 'Árvores antigas guardam segredos' },
-  { id: 'bg_volcano',   nome: 'Vulcão',          custo: 700,  lvlMin: 5,  img: null /* 'assets/bg/volcano.png' */, desc: 'Lava e cinzas no horizonte' },
-  { id: 'bg_sky',       nome: 'Céu dos Deuses',  custo: 1000, lvlMin: 7,  img: null /* 'assets/bg/sky.png' */,     desc: 'Nuvens douradas além dos mortais' },
-  { id: 'bg_void',      nome: 'Vazio Eterno',    custo: 1500, lvlMin: 9,  img: null /* 'assets/bg/void.png' */,    desc: 'O nada absoluto... ou quase' },
-  { id: 'bg_olympus',   nome: 'Olimpo',          custo: 2500, lvlMin: 10, img: null /* 'assets/bg/olympus.png' */, desc: 'Somente os deuses chegam aqui' },
-];
+// xpData definido em script.js
+// BACKGROUNDS definido em wallpapers.js
+
+
 
 function drawAvatarSilhouette(ctx, id, size) {
   const tmpC = document.createElement('canvas');

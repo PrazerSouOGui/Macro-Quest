@@ -2,7 +2,7 @@
 // Wallpapers disponíveis na loja de fundos
 // img: pode ser null (gera gradiente/pixel art no canvas) ou caminho de imagem
 
-const BACKGROUNDS = [
+var BACKGROUNDS = [
   { id: 'bg_default',  nome: 'Padrão',          custo: 0,    lvlMin: 1,  img: null, desc: 'Fundo padrão escuro' },
   { id: 'bg_dungeon',  nome: 'Masmorra',         custo: 200,  lvlMin: 2,  img: null, desc: 'Pedras úmidas e tochas flamejantes' },
   { id: 'bg_arena',    nome: 'Arena',            custo: 350,  lvlMin: 3,  img: null, desc: 'O público clama por sangue' },
@@ -15,7 +15,7 @@ const BACKGROUNDS = [
 
 // ── Gerador de wallpapers em pixel art puro ────────────────────────
 // Cada função recebe (ctx, size) e desenha um fundo completo no canvas
-const WALLPAPER_GENERATORS = {
+var WALLPAPER_GENERATORS = {
 
   bg_default: (ctx, size) => {
     // Fundo escuro com grade de pontos sutis
