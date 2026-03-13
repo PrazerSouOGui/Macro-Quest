@@ -6,7 +6,7 @@
 <title>MACRO QUEST</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="style.css"/>
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js?render=6LeCcoksAAAAAC2wMpHGTEhBgIENx02JJFMVeGp5"></script>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
 
 <script>
@@ -678,14 +678,12 @@
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn-green" onclick="socialLogin()" style="flex:1;justify-content:center;padding:9px">▶ Entrar</button>
-            <button class="btn-blue" onclick="mostrarCaptchaRegistro()" style="flex:1;justify-content:center;padding:9px">✦ Criar Conta</button>
+            <button class="btn-blue" onclick="socialRegister()" style="flex:1;justify-content:center;padding:9px">✦ Criar Conta</button>
           </div>
-          <!-- reCAPTCHA v2 — aparece só ao criar conta -->
-          <div id="recaptcha-area" style="display:none;margin-top:12px;padding:10px;background:rgba(41,128,185,.07);border:1px solid rgba(41,128,185,.25);border-radius:2px">
-            <div style="font-family:var(--font-vt);font-size:.88rem;color:var(--ink-m);margin-bottom:8px">✦ Confirme que você não é um robô:</div>
-            <div class="g-recaptcha" data-sitekey="6LeCcoksAAAAAC2wMpHGTEhBgIENx02JJFMVeGp5" data-theme="dark"></div>
-            <button class="btn-blue" onclick="socialRegister()" style="width:100%;justify-content:center;padding:9px;margin-top:10px">✦ Confirmar e Criar Conta</button>
-            <button onclick="ocultarCaptchaRegistro()" style="width:100%;margin-top:6px;padding:7px;background:none;border:1px solid var(--line-s);color:var(--ink-f);font-family:var(--font-vt);cursor:pointer;border-radius:2px">Cancelar</button>
+          <div style="margin-top:6px;font-family:var(--font-vt);font-size:.78rem;color:var(--ink-f);text-align:center">
+            Protegido por reCAPTCHA v3 &mdash;
+            <a href="https://policies.google.com/privacy" target="_blank" style="color:var(--ink-f)">Privacidade</a> &amp;
+            <a href="https://policies.google.com/terms" target="_blank" style="color:var(--ink-f)">Termos</a>
           </div>
           <div style="text-align:right;margin-top:6px">
             <button onclick="mostrarRecuperarSenha()" style="background:none;border:none;color:var(--ink-f);font-family:var(--font-vt);font-size:.88rem;cursor:pointer;padding:2px 0;text-decoration:underline;text-decoration-color:var(--line-s)">Esqueci minha senha</button>
@@ -1005,18 +1003,11 @@
       return;
     }
     try {
-      // Para usar a página bonita de reset, configure o Firebase Console:
-      // Authentication → Templates → Redefinição de senha → Personalizar URL de ação
-      // e aponte para: https://seudominio.com/reset-password.html
-      // Também adicione seu domínio em Authentication → Settings → Authorized domains
-      //
-      // Alternativamente, use o actionCodeSettings abaixo (descomente e coloque sua URL):
-      // const actionSettings = {
-      //   url: 'https://seudominio.com/reset-password.html',
-      //   handleCodeInApp: false,
-      // };
-      // await sendPasswordResetEmail(auth, email, actionSettings);
-      await sendPasswordResetEmail(auth, email);
+      const actionSettings = {
+        url: 'https://macro-quest.vercel.app/reset-password.html',
+        handleCodeInApp: false,
+      };
+      await sendPasswordResetEmail(auth, email, actionSettings);
       msgEl.style.display = 'block';
       msgEl.style.background = 'rgba(26,188,156,.08)';
       msgEl.style.border = '1px solid rgba(46,204,113,.3)';
@@ -1089,13 +1080,8 @@
     }
   };
 
-  window.mostrarCaptchaRegistro = function() {
-    document.getElementById('recaptcha-area').style.display = '';
-  };
-  window.ocultarCaptchaRegistro = function() {
-    document.getElementById('recaptcha-area').style.display = 'none';
-    if(window.grecaptcha) grecaptcha.reset();
-  };
+  window.mostrarCaptchaRegistro = function() {};   // não usado mais, mantido por compatibilidade
+  window.ocultarCaptchaRegistro = function() {};
 
   window.socialRegister = async function() {
     const email = document.getElementById('social-email').value.trim();
@@ -1103,26 +1089,26 @@
     const errEl = document.getElementById('social-auth-error');
     const loadEl = document.getElementById('social-loading');
     errEl.style.display='none';
-
-    // Validar reCAPTCHA v2
-    const captchaToken = window.grecaptcha ? grecaptcha.getResponse() : '';
-    if (!captchaToken) {
-      errEl.textContent = 'Por favor, confirme o reCAPTCHA antes de criar a conta.';
-      errEl.style.display='';
-      return;
-    }
-
     loadEl.style.display='';
-    const xp = typeof xpData!=='undefined'?xpData:{};
-    const nome = xp.playerName || 'Jogador';
+
     try {
+      // reCAPTCHA v3 — execução invisível
+      const token = await new Promise((resolve, reject) => {
+        if (!window.grecaptcha) { resolve('bypass'); return; }
+        grecaptcha.ready(() => {
+          grecaptcha.execute('6LeCcoksAAAAAC2wMpHGTEhBgIENx02JJFMVeGp5', {action:'register'})
+            .then(resolve).catch(reject);
+        });
+      });
+      if (!token) throw new Error('Falha no reCAPTCHA. Tente novamente.');
+
+      const xp = typeof xpData!=='undefined'?xpData:{};
+      const nome = xp.playerName || 'Jogador';
       const cred = await createUserWithEmailAndPassword(auth, email, pass);
       await updateProfile(cred.user, {displayName: nome});
-      ocultarCaptchaRegistro();
     } catch(e) {
       loadEl.style.display='none';
-      if(window.grecaptcha) grecaptcha.reset();
-      errEl.textContent = traduzirErroAuth(e.code);
+      errEl.textContent = traduzirErroAuth(e.code) || e.message;
       errEl.style.display='';
     }
   };

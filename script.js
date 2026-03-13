@@ -1816,7 +1816,6 @@ function drawAvatar(ctx, id, size=72) {
   };
   switch(id) {
       case 'rookie_m': {
-  bg('#0d0d18');
   // CORPO - roupa preta
   r(4,6,8,5,'#1a1a1a');
   r(3,7,2,4,'#111');
@@ -1849,7 +1848,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
       case 'rookie_f': {
-  bg('#0d0d18');
   // CORPO feminino - blusa lilás, saia/legging
   r(4,6,8,5,'#7c4dff');
   r(3,7,2,4,'#651fff');
@@ -1900,7 +1898,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'gym_m1': {
-  bg('#0a0a14');
   r(5,1,6,4,'#d4a76a');
   r(5,1,6,1,'#1a1a1a');
   r(6,3,1,1,'#1a1a1a'); r(9,3,1,1,'#1a1a1a');
@@ -1916,7 +1913,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'gym_m2': {
-  bg('#0a0a14');
   r(5,1,6,5,'#e8c49a');
   r(5,1,6,2,'#1a1a1a');
   r(6,3,1,1,'#333'); r(9,3,1,1,'#333');
@@ -1932,7 +1928,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'gym_f1': {
-  bg('#0a0a14');
   r(5,1,6,5,'#f5c6a0');
   r(4,0,8,3,'#8b4513');
   r(4,3,1,3,'#8b4513'); r(11,3,1,3,'#8b4513');
@@ -1948,7 +1943,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'gym_f2': {
-  bg('#0a0a14');
   r(5,1,6,4,'#e8b88a');
   r(5,0,6,2,'#1a1a1a');
   r(4,0,2,3,'#1a1a1a'); r(11,0,2,3,'#1a1a1a');
@@ -1965,7 +1959,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'warrior_m1': {
-  bg('#0c0c0c');
   r(4,1,8,2,'#90a4ae');
   r(3,3,10,3,'#78909c');
   r(4,2,8,2,'#b0bec5');
@@ -1984,7 +1977,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'warrior_m2': {
-  bg('#0c0c0c');
   r(4,1,8,5,'#5d4037');
   r(6,2,4,4,'#795548');
   r(4,0,2,2,'#8d6e63'); r(10,0,2,2,'#8d6e63');
@@ -2001,7 +1993,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'warrior_f1': {
-  bg('#0c0c0c');
   r(4,0,8,3,'#90a4ae');
   r(4,0,8,1,'#b0bec5');
   r(6,0,4,2,'#e74c3c');
@@ -2018,7 +2009,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'warrior_f2': {
-  bg('#0c0c0c');
   r(4,1,8,5,'#f0d4b0');
   r(4,0,8,3,'#ffd54f');
   r(3,2,2,5,'#ffd54f'); r(11,2,2,5,'#ffd54f');
@@ -2036,7 +2026,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'monk_m1': {
-  bg('#0c0c0c');
   r(5,2,6,4,'#d4956a');
   r(6,3,1,1,'#333'); r(9,3,1,1,'#333');
   r(7,5,2,1,'#d4956a');
@@ -2050,7 +2039,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'monk_m2': {
-  bg('#0c0c0c');
   r(5,2,6,4,'#c8955a');
   r(5,2,6,1,'#f5f5f5');
   r(4,2,2,3,'#f5f5f5'); r(12,2,2,3,'#f5f5f5');
@@ -2065,7 +2053,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'monk_f1': {
-  bg('#0c0c0c');
   r(5,2,6,4,'#d4a574');
   r(4,0,8,4,'#5d4037');
   r(3,3,2,5,'#5d4037'); r(11,3,2,5,'#5d4037');
@@ -2081,7 +2068,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'monk_f2': {
-  bg('#0c0c0c');
   r(5,2,6,4,'#e8b88a');
   r(4,1,8,3,'#1a1a1a');
   r(7,0,2,2,'#1a1a1a');
@@ -2098,7 +2084,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'mage_m1': {
-  bg('#0d0d2b');
   r(4,0,8,4,'#2980b9');
   r(6,0,4,6,'#3498db');
   r(7,0,2,2,'#ffd54f');
@@ -2114,7 +2099,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'mage_m2': {
-  bg('#0d0d2b');
   r(5,1,6,5,'#c9a46a');
   r(4,0,8,2,'#1a1a1a');
   r(5,0,6,7,'#212121');
@@ -2132,7 +2116,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'mage_f1': {
-  bg('#0d0d2b');
   r(4,0,8,5,'#e91e63');
   r(5,0,6,7,'#f06292');
   r(7,0,2,3,'#ffd54f');
@@ -2147,7 +2130,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'mage_f2': {
-  bg('#0d0d2b');
   r(5,1,6,5,'#ddb892');
   r(4,0,8,3,'#1a1a1a');
   r(5,0,6,7,'#212121');
@@ -2162,7 +2144,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'troll_m1': {
-  bg('#0c0c0c');
   r(3,2,10,5,'#2d6a2d');
   r(4,1,8,4,'#3d8b3d');
   r(4,4,2,3,'#1a4d1a'); r(10,4,2,3,'#1a4d1a');
@@ -2179,7 +2160,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'troll_m2': {
-  bg('#0c0c0c');
   r(2,2,12,5,'#5d4037');
   r(3,1,10,4,'#6d4c41');
   r(3,4,2,4,'#4e342e'); r(11,4,2,4,'#4e342e');
@@ -2200,7 +2180,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'troll_f1': {
-  bg('#0c0c0c');
   r(4,2,8,5,'#388e3c');
   r(4,1,8,2,'#2e7d32');
   r(3,2,2,4,'#2e7d32'); r(11,2,2,4,'#2e7d32');
@@ -2217,7 +2196,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'troll_f2': {
-  bg('#0c0c0c');
   r(4,2,8,5,'#4a6741');
   r(4,1,8,2,'#2d4a2a');
   r(3,2,2,5,'#2d4a2a'); r(11,2,2,5,'#2d4a2a');
@@ -2236,7 +2214,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'orc_m1': {
-  bg('#0c0c0c');
   r(3,2,10,5,'#388e3c');
   r(4,1,8,4,'#43a047');
   r(3,3,2,3,'#2e7d32'); r(11,3,2,3,'#2e7d32');
@@ -2253,7 +2230,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'orc_m2': {
-  bg('#0c0c0c');
   r(2,1,12,5,'#1b5e20');
   r(3,0,10,4,'#2e7d32');
   r(2,2,2,4,'#1b5e20'); r(12,2,2,4,'#1b5e20');
@@ -2269,7 +2245,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'orc_f1': {
-  bg('#0c0c0c');
   r(4,2,8,5,'#4caf50');
   r(4,1,8,3,'#e91e63');
   r(3,3,2,4,'#e91e63'); r(11,3,2,4,'#e91e63');
@@ -2284,7 +2259,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'orc_f2': {
-  bg('#0c0c0c');
   r(4,2,8,5,'#388e3c');
   r(3,1,10,3,'#ffd54f');
   r(6,0,4,2,'#ffd54f');
@@ -2300,7 +2274,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'cerb_m1': {
-  bg('#0c0c0c');
   r(1,1,4,4,'#424242');
   r(6,0,4,5,'#212121');
   r(11,1,4,4,'#424242');
@@ -2317,7 +2290,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'cerb_m2': {
-  bg('#0c0c0c');
   r(4,2,8,5,'#8b0000');
   r(4,2,8,2,'#c62828');
   r(3,0,2,4,'#5d0000'); r(11,0,2,4,'#5d0000');
@@ -2336,7 +2308,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'cerb_f1': {
-  bg('#0c0c0c');
   r(4,2,8,5,'#b0bec5');
   r(3,0,10,4,'#eceff1');
   r(2,3,2,7,'#eceff1'); r(12,3,2,7,'#eceff1');
@@ -2351,7 +2322,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'cerb_f2': {
-  bg('#0c0c0c');
   r(5,2,6,5,'#37474f');
   r(4,1,8,3,'#263238');
   r(3,2,2,5,'#263238'); r(11,2,2,5,'#263238');
@@ -2365,7 +2335,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'dragon_m1': {
-  bg('#0c0c0c');
   r(3,2,10,5,'#c62828');
   r(4,1,8,5,'#e53935');
   r(3,1,2,3,'#b71c1c'); r(11,1,2,3,'#b71c1c');
@@ -2382,7 +2351,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'dragon_m2': {
-  bg('#0c0c0c');
   r(3,2,10,5,'#1a1a1a');
   r(4,1,8,5,'#212121');
   r(3,1,2,3,'#000'); r(11,1,2,3,'#000');
@@ -2399,7 +2367,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'dragon_f1': {
-  bg('#0a0a1a');
   r(3,1,10,5,'#f0f0f0');
   r(4,0,8,4,'#ffffff');
   r(2,0,3,3,'#e0e0e0'); r(11,0,3,3,'#e0e0e0');
@@ -2420,7 +2387,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'dragon_f2': {
-  bg('#0c0c0c');
   r(3,2,10,5,'#01579b');
   r(4,1,8,5,'#0288d1');
   r(4,0,2,3,'#004d6f'); r(10,0,2,3,'#004d6f');
@@ -2436,7 +2402,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'god_m1': {
-  bg('#0a0a1a');
   r(4,2,8,5,'#e8d5b0');
   r(4,1,8,2,'#c0c0c0');
   r(3,2,2,5,'#c0c0c0'); r(11,2,2,5,'#c0c0c0');
@@ -2458,7 +2423,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'god_m2': {
-  bg('#0a0a20');
   r(5,2,6,5,'#fff9f0');
   r(4,1,8,3,'#f5f5f5');
   r(3,2,2,5,'#f5f5f5'); r(11,2,2,5,'#f5f5f5');
@@ -2481,7 +2445,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'god_f1': {
-  bg('#0a0a1a');
   r(5,2,6,5,'#f5e6c8');
   r(4,0,8,3,'#ffd54f');
   r(3,1,2,6,'#ffd54f'); r(11,1,2,6,'#ffd54f');
@@ -2500,7 +2463,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   case 'god_f2': {
-  bg('#0a0a1a');
   r(5,3,6,5,'#f5e8c8');
   r(4,0,8,4,'#90a4ae');
   r(3,0,3,2,'#b0bec5'); r(10,0,3,2,'#b0bec5');
@@ -2523,7 +2485,6 @@ function drawAvatar(ctx, id, size=72) {
   break;
   }
   default: {
-  bg('#1a1a1a');
   r(5,3,6,6,'#e74c3c');
   r(6,5,1,1,'#fff'); r(9,5,1,1,'#fff');
   r(6,8,4,1,'#fff');
@@ -3644,18 +3605,37 @@ window.admToggleBloqueio = async function() {
 window.admExcluirUsuario = async function() {
   if(!_admUsuarioSelecionado){ showToast('Selecione um usuário!','red'); return; }
   const u = _admUsuarioSelecionado;
-  if(!confirm(`⚠️ EXCLUIR permanentemente o usuário "${u.displayName||u.uid}"?\n\nEsta ação remove os dados do Firestore. O login (Firebase Auth) precisará ser removido separadamente no Console do Firebase.`)) return;
+  if(!confirm(`⚠️ EXCLUIR permanentemente "${u.displayName||u.uid}"?\n\nIsso remove os dados do Firestore. A conta Auth será desativada (bloqueada).\nPara remoção completa do Auth use o Firebase Console.`)) return;
   try {
-    const { getFirestore, doc, deleteDoc, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const { getFirestore, doc, deleteDoc, collection, getDocs, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
     const db2 = getFirestore();
-    // Deletar subcoleções conhecidas
-    for(const sub of ['friends','xpGifts']) {
+    // 1) Bloquear conta no Firestore (impede login mesmo se Auth persistir)
+    try { await updateDoc(doc(db2,'users',u.uid),{bloqueado:true, excluido:true}); } catch(_){}
+    // 2) Deletar subcoleções
+    for(const sub of ['friends','xpGifts','xpRequests']) {
       try {
         const subSnap = await getDocs(collection(db2,'users',u.uid,sub));
         for(const d of subSnap.docs) await deleteDoc(d.ref);
       } catch(_){}
     }
+    // 3) Deletar documento principal
     await deleteDoc(doc(db2,'users',u.uid));
+    // 4) Tentar deletar via Firebase Auth REST API com token do admin logado
+    try {
+      const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+      const adminUser = getAuth().currentUser;
+      if(adminUser) {
+        const idToken = await adminUser.getIdToken(true);
+        const apiKey = 'AIzaSyDa5OSByIU8xdtXA04jM7f6P8ASbeYhzdo';
+        // Usar Cloud Identity Toolkit para deletar outro usuário (requer permissão ADM no Firestore Rules)
+        // Como fallback visual: marcar como excluído já foi feito acima
+        await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${apiKey}`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({idToken, localId: u.uid})
+        });
+      }
+    } catch(_){} // falha silenciosa — dados já foram deletados do Firestore
     admFecharEdicao();
     showToast(`Usuário ${u.displayName||'?'} excluído!`,'red');
     admBuscarUsuarios();
