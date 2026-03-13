@@ -2540,7 +2540,54 @@ let xpData = {
   unlockedAvatars: ['rookie_m'],
   pendingLevelUp: false,
   equippedTitle: null,
+  equippedBackground: null,
+  unlockedBackgrounds: ['bg_default'],
 };
+
+// ── Lista de fundos disponíveis ─────────────────────────────────
+// Para adicionar um fundo: preencha o campo 'img' com o caminho da imagem.
+// Ex: img: 'assets/backgrounds/floresta.png'
+const BACKGROUNDS = [
+  { id: 'bg_default',   nome: 'Padrão',         custo: 0,    lvlMin: 1,  img: null,                          desc: 'Fundo padrão escuro' },
+  { id: 'bg_dungeon',   nome: 'Masmorra',        custo: 200,  lvlMin: 2,  img: null /* 'assets/bg/dungeon.png' */,  desc: 'Pedras úmidas e tochas flamejantes' },
+  { id: 'bg_arena',     nome: 'Arena',           custo: 350,  lvlMin: 3,  img: null /* 'assets/bg/arena.png' */,   desc: 'O público clama por sangue' },
+  { id: 'bg_forest',    nome: 'Floresta Sombria',custo: 500,  lvlMin: 4,  img: null /* 'assets/bg/forest.png' */,  desc: 'Árvores antigas guardam segredos' },
+  { id: 'bg_volcano',   nome: 'Vulcão',          custo: 700,  lvlMin: 5,  img: null /* 'assets/bg/volcano.png' */, desc: 'Lava e cinzas no horizonte' },
+  { id: 'bg_sky',       nome: 'Céu dos Deuses',  custo: 1000, lvlMin: 7,  img: null /* 'assets/bg/sky.png' */,     desc: 'Nuvens douradas além dos mortais' },
+  { id: 'bg_void',      nome: 'Vazio Eterno',    custo: 1500, lvlMin: 9,  img: null /* 'assets/bg/void.png' */,    desc: 'O nada absoluto... ou quase' },
+  { id: 'bg_olympus',   nome: 'Olimpo',          custo: 2500, lvlMin: 10, img: null /* 'assets/bg/olympus.png' */, desc: 'Somente os deuses chegam aqui' },
+];
+
+function aplicarFundoAvatar() {
+  const frame = document.querySelector('.xp-avatar-frame');
+  if (!frame) return;
+  const bgId = xpData.equippedBackground;
+  if (!bgId || bgId === 'bg_default') {
+    frame.style.backgroundImage = '';
+    frame.style.backgroundSize = '';
+    frame.style.backgroundPosition = '';
+    return;
+  }
+  const bg = BACKGROUNDS.find(b => b.id === bgId);
+  if (bg && bg.img) {
+    frame.style.backgroundImage = 'url("' + bg.img + '")';
+    frame.style.backgroundSize = 'cover';
+    frame.style.backgroundPosition = 'center';
+  } else {
+    // Fundo sem imagem ainda — aplicar cor placeholder temática
+    const placeholders = {
+      bg_dungeon:  'radial-gradient(ellipse at 30% 70%, #1a0e05 0%, #2d1a08 50%, #0d0a06 100%)',
+      bg_arena:    'radial-gradient(ellipse at 50% 80%, #1a0505 0%, #3d0e0e 50%, #0d0505 100%)',
+      bg_forest:   'radial-gradient(ellipse at 40% 60%, #051a08 0%, #0e3d14 50%, #050d07 100%)',
+      bg_volcano:  'radial-gradient(ellipse at 50% 100%, #3d1a00 0%, #7a2e00 40%, #1a0800 100%)',
+      bg_sky:      'radial-gradient(ellipse at 50% 0%, #0a1a3d 0%, #1a3d7a 50%, #050d1a 100%)',
+      bg_void:     'radial-gradient(ellipse at 50% 50%, #0d0520 0%, #1a0a3d 50%, #050208 100%)',
+      bg_olympus:  'radial-gradient(ellipse at 50% 20%, #3d3000 0%, #7a6200 40%, #1a1500 100%)',
+    };
+    frame.style.backgroundImage = placeholders[bgId] || '';
+    frame.style.backgroundSize = 'cover';
+  }
+}
 function salvarXPPerfil() {
   const name = _$_('xp-name-input').value.trim();
   if(name) xpData.playerName = name.toUpperCase();
@@ -2553,6 +2600,9 @@ function carregarXP() {
   xpData = {...xpData, ...d};
   if(!xpData.unlockedAvatars) xpData.unlockedAvatars = ['rookie_m'];
   ['rookie_m', 'rookie_f'].forEach(id => { if(!xpData.unlockedAvatars.includes(id)) xpData.unlockedAvatars.push(id); });
+  if(!xpData.unlockedBackgrounds) xpData.unlockedBackgrounds = ['bg_default'];
+  if(!xpData.unlockedBackgrounds.includes('bg_default')) xpData.unlockedBackgrounds.unshift('bg_default');
+  if(xpData.equippedBackground === undefined) xpData.equippedBackground = null;
   if(xpData.equippedAvatar === 'warrior') xpData.equippedAvatar = 'rookie_m';
   if(!xpData.equippedAvatar) xpData.equippedAvatar = 'rookie_m';
   if(xpData.equippedTitle === undefined) xpData.equippedTitle = null;
@@ -2601,6 +2651,7 @@ function renderXPCard() {
   const canvas = _$_('avatar-canvas');
   const ctx = canvas.getContext('2d');
   drawAvatar(ctx, xpData.equippedAvatar, 72);
+  aplicarFundoAvatar();
 }
 function mostrarXPGain(amount, positivo=true, label='') {
   const el = document.createElement('div');
@@ -2753,6 +2804,97 @@ function abrirAvatarShop() {
   renderAvatarGrid();
   abrirModal('modal-avatar-shop');
 }
+function abrirBackgroundShop() {
+  _$_('bg-shop-xp-display').textContent = xpData.totalXP;
+  renderBackgroundGrid();
+  abrirModal('modal-background-shop');
+}
+function renderBackgroundGrid() {
+  const grid = _$_('background-grid');
+  grid.innerHTML = '';
+  BACKGROUNDS.forEach(bg => {
+    const isUnlocked = xpData.unlockedBackgrounds.includes(bg.id);
+    const isEquipped = xpData.equippedBackground === bg.id || (bg.id === 'bg_default' && !xpData.equippedBackground);
+    const lvlOk = xpData.level >= bg.lvlMin;
+    const canAfford = xpData.totalXP >= bg.custo;
+    const locked = !isUnlocked && (!lvlOk || !canAfford);
+    const item = document.createElement('div');
+    item.className = 'avatar-item' + (isEquipped ? ' equipped' : '') + (locked ? ' locked' : '');
+    item.style.position = 'relative';
+    // Preview do fundo
+    const preview = document.createElement('div');
+    preview.style.cssText = 'width:56px;height:56px;margin:0 auto 6px;border-radius:2px;border:1px solid var(--line-s);display:flex;align-items:center;justify-content:center;font-size:1.4rem;overflow:hidden;';
+    if (bg.img) {
+      preview.style.backgroundImage = 'url("' + bg.img + '")';
+      preview.style.backgroundSize = 'cover';
+      preview.style.backgroundPosition = 'center';
+      preview.textContent = '';
+    } else if (bg.id === 'bg_default') {
+      preview.style.background = 'var(--surface)';
+      preview.innerHTML = '<span style="font-size:.45rem;font-family:var(--font-pixel);color:var(--ink-f)">DEF</span>';
+    } else {
+      const placeholders = { bg_dungeon:'linear-gradient(135deg,#2d1a08,#0d0a06)', bg_arena:'linear-gradient(135deg,#3d0e0e,#0d0505)', bg_forest:'linear-gradient(135deg,#0e3d14,#050d07)', bg_volcano:'linear-gradient(135deg,#7a2e00,#1a0800)', bg_sky:'linear-gradient(135deg,#1a3d7a,#050d1a)', bg_void:'linear-gradient(135deg,#1a0a3d,#050208)', bg_olympus:'linear-gradient(135deg,#7a6200,#1a1500)' };
+      preview.style.background = placeholders[bg.id] || 'var(--surface)';
+      preview.innerHTML = '<span style="font-size:.5rem">🖼</span>';
+    }
+    if (locked) {
+      preview.style.filter = 'brightness(0.3) grayscale(1)';
+    }
+    const name = document.createElement('span');
+    name.className = 'av-name';
+    name.textContent = bg.nome;
+    const cost = document.createElement('span');
+    cost.className = 'av-cost';
+    cost.textContent = bg.custo === 0 ? 'GRÁTIS' : bg.custo + ' XP';
+    const desc = document.createElement('span');
+    desc.style.cssText = 'font-family:var(--font-vt);font-size:.72rem;color:var(--ink-f);display:block;margin-top:2px;line-height:1.3';
+    desc.textContent = bg.desc;
+    if (!lvlOk && !isUnlocked) {
+      const lvlReq = document.createElement('span');
+      lvlReq.className = 'av-lvlreq';
+      lvlReq.textContent = 'LVL ' + bg.lvlMin + ' req.';
+      item.appendChild(preview); item.appendChild(name); item.appendChild(cost); item.appendChild(lvlReq);
+    } else {
+      item.appendChild(preview); item.appendChild(name); item.appendChild(cost); item.appendChild(desc);
+    }
+    if (isEquipped) {
+      const eq = document.createElement('span');
+      eq.style.cssText = 'position:absolute;top:3px;right:5px;font-family:var(--font-pixel);font-size:.28rem;color:var(--green-l)';
+      eq.textContent = '✓';
+      item.appendChild(eq);
+    }
+    item.addEventListener('click', () => {
+      if (locked) { showToast('Nível ou XP insuficiente!', 'red', 2500); return; }
+      if (isEquipped) return;
+      if (!isUnlocked) {
+        // Comprar
+        if (!canAfford) { showToast('XP insuficiente!', 'red', 2500); return; }
+        if (confirm('Comprar fundo "' + bg.nome + '" por ' + bg.custo + ' XP?')) {
+          xpData.totalXP = Math.max(0, xpData.totalXP - bg.custo);
+          xpData.unlockedBackgrounds.push(bg.id);
+          xpData.equippedBackground = bg.id;
+          localStorage.setItem('xpData', JSON.stringify(xpData));
+          aplicarFundoAvatar();
+          renderXPCard();
+          renderBackgroundGrid();
+          _$_('bg-shop-xp-display').textContent = xpData.totalXP;
+          showToast('Fundo equipado: <b>' + bg.nome + '</b>!', 'amber', 3000);
+        }
+      } else {
+        // Equipar
+        xpData.equippedBackground = bg.id === 'bg_default' ? null : bg.id;
+        localStorage.setItem('xpData', JSON.stringify(xpData));
+        aplicarFundoAvatar();
+        renderXPCard();
+        renderBackgroundGrid();
+        showToast('Fundo: <b>' + bg.nome + '</b>!', 'amber', 2000);
+        setTimeout(() => fecharModal('modal-background-shop'), 500);
+      }
+    });
+    grid.appendChild(item);
+  });
+}
+
 function mostrarModalSkin(av, acao) {
   const wrap = _$_('skin-confirm-canvas-wrap');
   wrap.innerHTML = '';

@@ -25,9 +25,12 @@
 </div>
 <div class="xp-profile-card" id="xp-player-card">
   <div class="xp-avatar-area">
-    <div class="xp-avatar-frame" onclick="abrirAvatarShop()" title="Clique para trocar avatar">
-      <canvas id="avatar-canvas" width="72" height="72"></canvas>
-      <div class="xp-avatar-edit-hint">TROCAR</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div class="xp-avatar-frame" onclick="abrirAvatarShop()" title="Clique para trocar skin">
+        <canvas id="avatar-canvas" width="72" height="72"></canvas>
+        <div class="xp-avatar-edit-hint">SKIN</div>
+      </div>
+      <button onclick="abrirBackgroundShop()" title="Trocar fundo do personagem" style="font-family:var(--font-pixel);font-size:.24rem;padding:3px 6px;background:rgba(41,128,185,.1);color:#7dd3fc;border-color:rgba(41,128,185,.3);letter-spacing:.04em;width:100%">🖼 FUNDO</button>
     </div>
     <div class="xp-info">
       <div class="xp-player-name" id="xp-player-name-display">SEU NOME</div>
@@ -308,6 +311,21 @@
     </div>
   </div>
 </div>
+<div class="modal-bg" id="modal-background-shop">
+  <div class="modal-box" style="max-width:560px">
+    <h3 style="display:flex;align-items:center;gap:10px">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="18" height="18" fill="none" style="vertical-align:middle;flex-shrink:0"><rect x="0" y="0" width="16" height="16" fill="#0d1a2e"/><rect x="0" y="12" width="16" height="4" fill="#1a3d1a"/><rect x="0" y="10" width="16" height="2" fill="#2a5c2a"/><rect x="3" y="4" width="4" height="6" fill="#4a2a0a"/><rect x="4" y="2" width="2" height="2" fill="#6b4018"/><rect x="9" y="6" width="2" height="4" fill="#2a2a2a"/><rect x="10" y="5" width="1" height="1" fill="#7dd3fc"/><rect x="12" y="3" width="3" height="3" fill="#fcd34d" style="opacity:.7"/></svg>
+      LOJA DE FUNDOS
+    </h3>
+    <p style="font-size:.85rem;color:var(--ink-m);margin-bottom:4px"><b id="bg-shop-xp-display" style="color:var(--amber-l)">0</b> XP disponíveis</p>
+    <p style="font-size:.78rem;color:var(--ink-f);margin-bottom:10px;font-family:var(--font-vt)">Fundos aparecem atrás do seu personagem no card.</p>
+    <div class="avatar-grid" id="background-grid"></div>
+    <div class="btns" style="margin-top:8px">
+      <button onclick="fecharModal('modal-background-shop')">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="modal-levels">
   <div class="modal-box" style="max-width:560px">
     <h3 style="display:flex;align-items:center;gap:10px;font-size:.62rem">
@@ -600,7 +618,20 @@
             <button class="btn-green" onclick="socialLogin()" style="flex:1;justify-content:center;padding:9px">▶ Entrar</button>
             <button class="btn-blue" onclick="socialRegister()" style="flex:1;justify-content:center;padding:9px">✦ Criar Conta</button>
           </div>
+          <div style="text-align:right;margin-top:6px">
+            <button onclick="mostrarRecuperarSenha()" style="background:none;border:none;color:var(--ink-f);font-family:var(--font-vt);font-size:.88rem;cursor:pointer;padding:2px 0;text-decoration:underline;text-decoration-color:var(--line-s)">Esqueci minha senha</button>
+          </div>
           <div id="social-loading" style="display:none;text-align:center;padding:16px;font-family:var(--font-vt);color:var(--ink-m);font-size:.95rem"><span class="spinner"></span> Aguarde...</div>
+          <!-- Painel recuperar senha -->
+          <div id="social-recover-panel" style="display:none;margin-top:12px;padding:12px;background:rgba(41,128,185,.07);border:1px solid rgba(41,128,185,.25);border-radius:2px">
+            <p style="font-family:var(--font-vt);font-size:.95rem;color:var(--ink-m);margin-bottom:8px">Digite seu e-mail para receber o link de recuperação:</p>
+            <input type="email" id="social-recover-email" placeholder="E-mail cadastrado" style="width:100%;font-family:var(--font-vt);font-size:1rem;padding:8px 10px;margin-bottom:8px">
+            <div id="social-recover-msg" style="display:none;font-family:var(--font-vt);font-size:.9rem;padding:6px 10px;border-radius:2px;margin-bottom:8px"></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn-blue" onclick="enviarRecuperacaoSenha()" style="flex:1;justify-content:center;padding:8px">✉ Enviar link</button>
+              <button onclick="ocultarRecuperarSenha()" style="padding:8px 12px;flex-shrink:0">✕ Cancelar</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -658,7 +689,7 @@
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, onSnapshot, serverTimestamp, orderBy, limit, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ═══════════════════════════════════════════════════════
@@ -748,6 +779,49 @@
     if(!snap.exists()) data.createdAt = serverTimestamp();
     await setDoc(ref, data, {merge:true});
     socialUserData = {...(snap.exists()?snap.data():{}), ...data};
+  }
+
+  function mostrarRecuperarSenha() {
+    document.getElementById('social-recover-panel').style.display = 'block';
+    document.getElementById('social-recover-msg').style.display = 'none';
+    const emailInput = document.getElementById('social-email');
+    const recoverInput = document.getElementById('social-recover-email');
+    if (emailInput && emailInput.value) recoverInput.value = emailInput.value;
+  }
+  function ocultarRecuperarSenha() {
+    document.getElementById('social-recover-panel').style.display = 'none';
+    document.getElementById('social-recover-msg').style.display = 'none';
+  }
+  async function enviarRecuperacaoSenha() {
+    const email = document.getElementById('social-recover-email').value.trim();
+    const msgEl = document.getElementById('social-recover-msg');
+    if (!email) {
+      msgEl.style.display = 'block';
+      msgEl.style.background = 'rgba(192,57,43,.1)';
+      msgEl.style.border = '1px solid rgba(231,76,60,.3)';
+      msgEl.style.color = '#fca5a5';
+      msgEl.textContent = 'Digite um e-mail válido.';
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      msgEl.style.display = 'block';
+      msgEl.style.background = 'rgba(26,188,156,.08)';
+      msgEl.style.border = '1px solid rgba(46,204,113,.3)';
+      msgEl.style.color = '#6ee7b7';
+      msgEl.textContent = '✓ Link enviado! Verifique seu e-mail (e spam).';
+    } catch(e) {
+      msgEl.style.display = 'block';
+      msgEl.style.background = 'rgba(192,57,43,.1)';
+      msgEl.style.border = '1px solid rgba(231,76,60,.3)';
+      msgEl.style.color = '#fca5a5';
+      const erros = {
+        'auth/user-not-found': 'E-mail não encontrado.',
+        'auth/invalid-email': 'E-mail inválido.',
+        'auth/too-many-requests': 'Muitas tentativas. Aguarde e tente novamente.',
+      };
+      msgEl.textContent = erros[e.code] || 'Erro ao enviar. Tente novamente.';
+    }
   }
 
   function mostrarPainelLogin() {
