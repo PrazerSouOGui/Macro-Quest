@@ -192,3 +192,68 @@
   #tut-card #tut-title{font-size:.44rem}
   #tut-card #tut-text{font-size:.88rem}
 }
+
+
+/* ═══════════════════════════════════════════════════════
+   SOCIAL SYSTEM
+═══════════════════════════════════════════════════════ */
+.social-tab {
+  background: transparent;
+  color: var(--ink-m);
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 7px 10px;
+  font-family: var(--font-vt);
+  font-size: .9rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  position: relative;
+  flex: 1;
+  justify-content: center;
+}
+.social-tab:hover {
+  color: var(--ink);
+  background: rgba(255,255,255,.04);
+  border-bottom-color: var(--line-s);
+  animation: none;
+}
+.social-tab.active {
+  color: var(--green-l);
+  border-bottom: 2px solid var(--green-l);
+  background: rgba(46,204,113,.06);
+  animation: none;
+}
+.social-tab:hover::before { display: none; }
+.social-tab::after { display: none; }
+
+.social-card {
+  background: var(--surface);
+  border: 1px solid var(--line-s);
+  border-radius: 3px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  transition: border-color .15s;
+}
+.social-card:hover {
+  border-color: var(--green);
+}
+
+.social-stat-pill {
+  background: var(--raised);
+  border: 1px solid var(--line-s);
+  border-radius: 2px;
+  padding: 4px 10px;
+  font-family: var(--font-vt);
+  font-size: .9rem;
+  color: var(--ink-m);
+  letter-spacing: .06em;
+}
+
+@media(max-width:600px) {
+  .social-tab { font-size: .78rem; padding: 6px 6px; letter-spacing: .04em; }
+  #modal-social .modal-box { max-height: 95vh; }
+}

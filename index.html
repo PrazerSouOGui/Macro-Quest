@@ -46,6 +46,7 @@
     <input type="text" id="xp-name-input" placeholder="Seu nome..." maxlength="20" oninput="salvarXPPerfil()">
     <button class="btn-orange" onclick="abrirAvatarShop()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="2" y="6" width="12" height="9" fill="#4a2c0a"/><rect x="1" y="7" width="14" height="1" fill="#6b3d12"/><rect x="2" y="6" width="12" height="1" fill="#7b4e1a"/><rect x="4" y="2" width="3" height="5" fill="none" stroke="#ffd54f" stroke-width="1"/><rect x="9" y="2" width="3" height="5" fill="none" stroke="#ffd54f" stroke-width="1"/><rect x="5" y="9" width="2" height="3" fill="#f39c12"/><rect x="9" y="9" width="2" height="3" fill="#f39c12"/><rect x="7" y="8" width="2" height="2" fill="#ffd54f"/><rect x="3" y="11" width="2" height="1" fill="#e67e22"/><rect x="11" y="11" width="2" height="1" fill="#e67e22"/></svg> Loja</button>
     <button class="btn-blue" onclick="abrirModalLevels()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="1" y="12" width="3" height="3" fill="#3498db"/><rect x="5" y="9" width="3" height="6" fill="#2980b9"/><rect x="9" y="6" width="3" height="9" fill="#1abc9c"/><rect x="13" y="3" width="3" height="12" fill="#f39c12"/><rect x="1" y="11" width="3" height="1" fill="#7dd3fc"/><rect x="5" y="8" width="3" height="1" fill="#7dd3fc"/><rect x="9" y="5" width="3" height="1" fill="#6ee7b7"/><rect x="13" y="2" width="3" height="1" fill="#fcd34d"/></svg> Níveis</button>
+    <button class="btn-green" id="btn-social" onclick="abrirSocial()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap;position:relative"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="1" y="3" width="5" height="5" fill="#2ecc71"/><rect x="0" y="8" width="7" height="5" fill="#27ae60"/><rect x="9" y="3" width="5" height="5" fill="#2ecc71"/><rect x="8" y="8" width="7" height="5" fill="#27ae60"/><rect x="6" y="6" width="4" height="1" fill="#6ee7b7"/></svg> Social<span id="social-notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#e74c3c;color:#fff;font-family:var(--font-pixel);font-size:.28rem;padding:2px 4px;border-radius:2px;min-width:14px;text-align:center;line-height:1.4">!</span></button>
     <button class="btn-blue" onclick="abrirConfiguracoes()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="6" y="0" width="4" height="2" fill="#7dd3fc"/><rect x="6" y="14" width="4" height="2" fill="#7dd3fc"/><rect x="0" y="6" width="2" height="4" fill="#7dd3fc"/><rect x="14" y="6" width="2" height="4" fill="#7dd3fc"/><rect x="2" y="2" width="2" height="2" fill="#7dd3fc"/><rect x="12" y="2" width="2" height="2" fill="#7dd3fc"/><rect x="2" y="12" width="2" height="2" fill="#7dd3fc"/><rect x="12" y="12" width="2" height="2" fill="#7dd3fc"/><rect x="4" y="4" width="8" height="8" fill="#2980b9"/><rect x="6" y="6" width="4" height="4" fill="#0c0c0c"/><rect x="7" y="7" width="2" height="2" fill="#7dd3fc"/></svg> Config</button>
   </div>
   <div class="xp-debug-row" id="xp-debug-row-main" style="display:none">
@@ -518,6 +519,709 @@
 
 
 
+
+<!-- ═══════════════════════════════════════════════════════
+     CELEBRATION OVERLAY — Macros do dia concluídos!
+═══════════════════════════════════════════════════════ -->
+<div id="celebration-overlay">
+
+  <!-- Vídeo de fundo -->
+  <video id="cel-bg-video" src="Meusparabenslittle.mp4" playsinline muted loop preload="auto"></video>
+
+  <!-- Áudio de comemoração -->
+  <audio id="victory-audio" src="Sweet Victory.mp3" preload="auto"></audio>
+
+  <!-- Confetti (gerado via JS) -->
+
+  <!-- Conteúdo central -->
+  <div id="cel-title">◆ MISSÃO CUMPRIDA! ◆</div>
+
+  <div id="cel-stars">★ ★ ★ ★ ★</div>
+
+  <div id="cel-msg"></div>
+
+  <button id="cel-close" class="btn-primary" onclick="fecharCelebracao()" style="font-size:.42rem;padding:12px 28px;letter-spacing:.12em">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:5px">
+      <rect x="2" y="8" width="2" height="2" fill="#fff"/>
+      <rect x="4" y="10" width="2" height="2" fill="#fff"/>
+      <rect x="6" y="12" width="2" height="2" fill="#fff"/>
+      <rect x="8" y="10" width="2" height="2" fill="#fff"/>
+      <rect x="10" y="8" width="2" height="2" fill="#fff"/>
+      <rect x="12" y="6" width="2" height="2" fill="#fff"/>
+      <rect x="12" y="4" width="2" height="2" fill="#fff"/>
+    </svg>
+    CONTINUAR
+  </button>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MODAL: SOCIAL
+═══════════════════════════════════════════════════════ -->
+<div class="modal-bg" id="modal-social">
+  <div class="modal-box" style="max-width:520px;width:100%;padding:0;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
+
+    <!-- Header tabs -->
+    <div style="background:var(--raised);border-bottom:1px solid var(--line-s);padding:14px 18px 0;flex-shrink:0">
+      <h3 style="margin:0 0 12px;display:flex;align-items:center;gap:8px">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none"><rect x="1" y="3" width="5" height="5" fill="#2ecc71"/><rect x="0" y="8" width="7" height="5" fill="#27ae60"/><rect x="9" y="3" width="5" height="5" fill="#2ecc71"/><rect x="8" y="8" width="7" height="5" fill="#27ae60"/><rect x="6" y="6" width="4" height="1" fill="#6ee7b7"/></svg>
+        <span style="color:var(--green-l)">SOCIAL</span>
+      </h3>
+      <div id="social-login-header" style="display:none;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;font-family:var(--font-vt);font-size:.95rem;color:var(--ink-m)">
+          <canvas id="social-my-avatar" width="28" height="28" style="image-rendering:pixelated;border:1px solid var(--amber);border-radius:2px"></canvas>
+          <span id="social-my-name" style="color:var(--amber-l);font-family:var(--font-pixel);font-size:.38rem"></span>
+          <span id="social-my-tag" style="color:var(--ink-f);font-size:.78rem"></span>
+        </div>
+      </div>
+      <div style="display:flex;gap:0;border-bottom:none" id="social-tabs">
+        <button class="social-tab active" data-tab="amigos" onclick="socialTab('amigos')">👥 Amigos</button>
+        <button class="social-tab" data-tab="ranking" onclick="socialTab('ranking')">🏆 Ranking</button>
+        <button class="social-tab" data-tab="pedidos" onclick="socialTab('pedidos')">
+          🔔 Pedidos<span id="social-pedidos-count" style="display:none;background:#e74c3c;color:#fff;font-family:var(--font-pixel);font-size:.26rem;padding:1px 4px;border-radius:2px;margin-left:4px">0</span>
+        </button>
+        <button class="social-tab" data-tab="buscar" onclick="socialTab('buscar')">🔍 Buscar</button>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div style="overflow-y:auto;flex:1;padding:14px 18px" id="social-body">
+
+      <!-- LOGIN PANEL -->
+      <div id="social-panel-login">
+        <p style="color:var(--ink-m);font-family:var(--font-vt);font-size:1rem;margin-bottom:14px;line-height:1.7">Crie sua conta para entrar no sistema social do Macro Quest!</p>
+        <div id="social-auth-form">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+            <input type="email" id="social-email" placeholder="E-mail" style="width:100%;font-family:var(--font-vt);font-size:1rem;padding:8px 10px">
+            <input type="password" id="social-password" placeholder="Senha (mín. 6 chars)" style="width:100%;font-family:var(--font-vt);font-size:1rem;padding:8px 10px">
+            <div id="social-auth-error" style="display:none;color:#fca5a5;font-family:var(--font-vt);font-size:.9rem;padding:6px 10px;background:rgba(192,57,43,.1);border:1px solid rgba(231,76,60,.3);border-radius:2px"></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-green" onclick="socialLogin()" style="flex:1;justify-content:center;padding:9px">▶ Entrar</button>
+            <button class="btn-blue" onclick="socialRegister()" style="flex:1;justify-content:center;padding:9px">✦ Criar Conta</button>
+          </div>
+          <div id="social-loading" style="display:none;text-align:center;padding:16px;font-family:var(--font-vt);color:var(--ink-m);font-size:.95rem"><span class="spinner"></span> Aguarde...</div>
+        </div>
+      </div>
+
+      <!-- ABA: AMIGOS -->
+      <div id="social-panel-amigos" style="display:none">
+        <div id="social-amigos-list"></div>
+        <div id="social-amigos-empty" style="display:none;text-align:center;padding:24px;font-family:var(--font-vt);font-size:.95rem;color:var(--ink-f)">Nenhum amigo ainda.<br>Use a aba 🔍 Buscar para adicionar!</div>
+      </div>
+
+      <!-- ABA: RANKING -->
+      <div id="social-panel-ranking" style="display:none">
+        <div id="social-ranking-list"></div>
+      </div>
+
+      <!-- ABA: PEDIDOS -->
+      <div id="social-panel-pedidos" style="display:none">
+        <div id="social-pedidos-amizade"></div>
+        <div id="social-pedidos-xp"></div>
+        <div id="social-pedidos-empty" style="display:none;text-align:center;padding:24px;font-family:var(--font-vt);font-size:.95rem;color:var(--ink-f)">Nenhum pedido pendente.</div>
+      </div>
+
+      <!-- ABA: BUSCAR -->
+      <div id="social-panel-buscar" style="display:none">
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <input type="text" id="social-search-input" placeholder="Buscar por nome ou #tag..." style="flex:1;font-family:var(--font-vt);font-size:1rem;padding:8px 10px" oninput="socialBuscarDebounce()">
+          <button class="btn-green" onclick="socialBuscar()" style="padding:8px 12px;flex-shrink:0">🔍</button>
+        </div>
+        <div id="social-search-results"></div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:10px 18px;border-top:1px solid var(--line-s);display:flex;gap:8px;flex-shrink:0;background:var(--raised)" id="social-footer">
+      <div id="social-footer-login" style="width:100%;display:flex;justify-content:flex-end">
+        <button class="btn-red" onclick="fecharModal('modal-social')" style="padding:8px 14px">Fechar</button>
+      </div>
+      <div id="social-footer-logado" style="width:100%;display:flex;gap:8px;justify-content:space-between;display:none">
+        <button class="btn-red" onclick="socialLogout()" style="padding:8px 12px;font-size:.75rem">Sair</button>
+        <button class="btn-blue" onclick="fecharModal('modal-social')" style="padding:8px 14px">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Ver Perfil de Amigo -->
+<div class="modal-bg" id="modal-perfil-amigo">
+  <div class="modal-box" style="max-width:380px">
+    <div id="perfil-amigo-content"></div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap" id="perfil-amigo-btns"></div>
+    <button class="btn-blue" onclick="fecharModal('modal-perfil-amigo');abrirSocial()" style="width:100%;justify-content:center;margin-top:8px">← Voltar</button>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, onSnapshot, serverTimestamp, orderBy, limit, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // ═══════════════════════════════════════════════════════
+  //  🔥 CONFIGURAÇÃO FIREBASE — substitua com seus dados!
+  // ═══════════════════════════════════════════════════════
+  // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDa5OSByIU8xdtXA04jM7f6P8ASbeYhzdo",
+    authDomain: "macroquest-b467e.firebaseapp.com",
+    projectId: "macroquest-b467e",
+    storageBucket: "macroquest-b467e.firebasestorage.app",
+    messagingSenderId: "219280746089",
+    appId: "1:219280746089:web:3e227578950677a60164f8",
+    measurementId: "G-BYM4SRMYEG"
+  };
+
+  // Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Serviços que você vai usar
+const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  export { auth, db };
+
+  // ── Utils ────────────────────────────────────────────
+  function gerarTag(nome) {
+    const clean = nome.replace(/[^a-z0-9]/gi,'').toLowerCase().slice(0,6) || 'user';
+    return clean + Math.floor(1000+Math.random()*9000);
+  }
+
+  function getLevelLabel(lvl) {
+    if(typeof LEVELS !== 'undefined') {
+      const ld = LEVELS.find(l=>l.lvl===lvl);
+      return ld ? ld.title : `LVL ${lvl}`;
+    }
+    return `LVL ${lvl}`;
+  }
+
+  function getAvatarDataURL(avatarId, size=36) {
+    const cv = document.createElement('canvas');
+    cv.width = size; cv.height = size;
+    if(typeof drawAvatar === 'function') drawAvatar(cv.getContext('2d'), avatarId||'rookie_m', size);
+    return cv.toDataURL();
+  }
+
+  // ── Estado global social ─────────────────────────────
+  let socialUser = null;
+  let socialUserData = null;
+  let socialUnsubs = [];
+
+  // ── Auth state listener ──────────────────────────────
+  onAuthStateChanged(auth, async (user) => {
+    socialUser = user;
+    if(user) {
+      await syncUserProfile(user);
+      mostrarPainelLogado();
+      escutarPedidos(user.uid);
+    } else {
+      mostrarPainelLogin();
+    }
+  });
+
+  async function syncUserProfile(user) {
+    const ref = doc(db, 'users', user.uid);
+    const snap = await getDoc(ref);
+    const xp = typeof xpData !== 'undefined' ? xpData : {};
+    const data = {
+      uid: user.uid,
+      email: user.email,
+      displayName: xp.playerName || user.displayName || 'Jogador',
+      tag: snap.exists() ? (snap.data().tag || gerarTag(xp.playerName||'user')) : gerarTag(xp.playerName||'user'),
+      level: xp.level || 1,
+      totalXP: xp.totalXP || 0,
+      avatar: xp.equippedAvatar || 'rookie_m',
+      titulo: xp.equippedTitle || null,
+      updatedAt: serverTimestamp()
+    };
+    if(!snap.exists()) data.createdAt = serverTimestamp();
+    await setDoc(ref, data, {merge:true});
+    socialUserData = {...(snap.exists()?snap.data():{}), ...data};
+  }
+
+  function mostrarPainelLogin() {
+    document.getElementById('social-panel-login').style.display = '';
+    document.getElementById('social-login-header').style.display = 'none';
+    document.getElementById('social-footer-login').style.display = 'flex';
+    document.getElementById('social-footer-logado').style.display = 'none';
+    ['amigos','ranking','pedidos','buscar'].forEach(t=>{
+      document.getElementById('social-panel-'+t).style.display = 'none';
+    });
+    document.getElementById('social-tabs').style.display = 'none';
+  }
+
+  function mostrarPainelLogado() {
+    document.getElementById('social-panel-login').style.display = 'none';
+    document.getElementById('social-tabs').style.display = 'flex';
+    document.getElementById('social-login-header').style.display = '';
+    document.getElementById('social-footer-login').style.display = 'none';
+    document.getElementById('social-footer-logado').style.display = 'flex';
+    // Atualizar header
+    const xp = typeof xpData !== 'undefined' ? xpData : {};
+    const nameEl = document.getElementById('social-my-name');
+    const tagEl = document.getElementById('social-my-tag');
+    if(nameEl) nameEl.textContent = xp.playerName || socialUserData?.displayName || 'Jogador';
+    if(tagEl) tagEl.textContent = '#' + (socialUserData?.tag || '????');
+    const cvEl = document.getElementById('social-my-avatar');
+    if(cvEl && typeof drawAvatar==='function') drawAvatar(cvEl.getContext('2d'), xp.equippedAvatar||'rookie_m', 28);
+    socialTab('amigos');
+  }
+
+  // ── Login / Registro / Logout ────────────────────────
+  window.socialLogin = async function() {
+    const email = document.getElementById('social-email').value.trim();
+    const pass = document.getElementById('social-password').value;
+    const errEl = document.getElementById('social-auth-error');
+    const loadEl = document.getElementById('social-loading');
+    errEl.style.display='none';
+    loadEl.style.display='';
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch(e) {
+      loadEl.style.display='none';
+      errEl.textContent = traduzirErroAuth(e.code);
+      errEl.style.display='';
+    }
+  };
+
+  window.socialRegister = async function() {
+    const email = document.getElementById('social-email').value.trim();
+    const pass = document.getElementById('social-password').value;
+    const errEl = document.getElementById('social-auth-error');
+    const loadEl = document.getElementById('social-loading');
+    errEl.style.display='none';
+    loadEl.style.display='';
+    const xp = typeof xpData!=='undefined'?xpData:{};
+    const nome = xp.playerName || 'Jogador';
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(cred.user, {displayName: nome});
+    } catch(e) {
+      loadEl.style.display='none';
+      errEl.textContent = traduzirErroAuth(e.code);
+      errEl.style.display='';
+    }
+  };
+
+  window.socialLogout = async function() {
+    socialUnsubs.forEach(u=>u());
+    socialUnsubs=[];
+    await signOut(auth);
+  };
+
+  function traduzirErroAuth(code) {
+    const map = {
+      'auth/user-not-found': 'Usuário não encontrado.',
+      'auth/wrong-password': 'Senha incorreta.',
+      'auth/email-already-in-use': 'E-mail já cadastrado.',
+      'auth/invalid-email': 'E-mail inválido.',
+      'auth/weak-password': 'Senha muito fraca (mín. 6 chars).',
+      'auth/too-many-requests': 'Muitas tentativas. Tente mais tarde.',
+      'auth/invalid-credential': 'E-mail ou senha incorretos.'
+    };
+    return map[code] || 'Erro: ' + code;
+  }
+
+  // ── Tabs ─────────────────────────────────────────────
+  window.socialTab = function(tab) {
+    ['amigos','ranking','pedidos','buscar'].forEach(t => {
+      document.getElementById('social-panel-'+t).style.display = t===tab ? '' : 'none';
+    });
+    document.querySelectorAll('.social-tab').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab===tab);
+    });
+    if(tab==='amigos') carregarAmigos();
+    if(tab==='ranking') carregarRanking();
+    if(tab==='pedidos') carregarPedidos();
+    if(tab==='buscar') document.getElementById('social-search-results').innerHTML='';
+  };
+
+  // ── AMIGOS ───────────────────────────────────────────
+  async function carregarAmigos() {
+    if(!socialUser) return;
+    const el = document.getElementById('social-amigos-list');
+    const emptyEl = document.getElementById('social-amigos-empty');
+    el.innerHTML = '<div style="text-align:center;padding:20px;font-family:var(--font-vt);color:var(--ink-f)"><span class="spinner"></span> Carregando...</div>';
+    const snap = await getDocs(collection(db, 'users', socialUser.uid, 'friends'));
+    const friends = [];
+    for(const d of snap.docs) {
+      const ref = doc(db,'users',d.id);
+      const us = await getDoc(ref);
+      if(us.exists()) friends.push({uid:d.id,...us.data()});
+    }
+    if(!friends.length) {
+      el.innerHTML=''; emptyEl.style.display=''; return;
+    }
+    emptyEl.style.display='none';
+    friends.sort((a,b)=>(b.totalXP||0)-(a.totalXP||0));
+    el.innerHTML = friends.map(f => socialCardHTML(f, 'amigo')).join('');
+  }
+
+  // ── RANKING ──────────────────────────────────────────
+  async function carregarRanking() {
+    if(!socialUser) return;
+    const el = document.getElementById('social-ranking-list');
+    el.innerHTML = '<div style="text-align:center;padding:20px;font-family:var(--font-vt);color:var(--ink-f)"><span class="spinner"></span> Carregando...</div>';
+    // Pegar IDs dos amigos
+    const fSnap = await getDocs(collection(db,'users',socialUser.uid,'friends'));
+    const fids = fSnap.docs.map(d=>d.id);
+    const allIds = [socialUser.uid, ...fids];
+    if(allIds.length < 1) { el.innerHTML='<div style="text-align:center;padding:24px;font-family:var(--font-vt);color:var(--ink-f)">Adicione amigos para ver o ranking!</div>'; return; }
+    const players = [];
+    for(const uid of allIds) {
+      const us = await getDoc(doc(db,'users',uid));
+      if(us.exists()) players.push({uid,...us.data()});
+    }
+    players.sort((a,b)=>(b.totalXP||0)-(a.totalXP||0));
+    el.innerHTML = players.map((p,i) => {
+      const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="font-family:var(--font-vt);color:var(--ink-m)">#${i+1}</span>`;
+      const isMe = p.uid===socialUser.uid;
+      return `<div class="social-card" style="${isMe?'border-color:var(--amber);':''}">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.2rem;min-width:24px;text-align:center">${medal}</span>
+          <canvas width="36" height="36" style="image-rendering:pixelated;border:1px solid ${isMe?'var(--amber)':'var(--line-s)'};border-radius:2px" data-av="${p.avatar||'rookie_m'}"></canvas>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:var(--font-pixel);font-size:.38rem;color:${isMe?'var(--amber-l)':'var(--ink)'};">${p.displayName||'?'}${isMe?' (você)':''}</div>
+            <div style="font-family:var(--font-vt);font-size:.82rem;color:var(--ink-f)">#${p.tag||'????'}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-family:var(--font-pixel);font-size:.34rem;color:var(--amber-l)">${p.totalXP||0} XP</div>
+            <div style="font-family:var(--font-vt);font-size:.78rem;color:var(--ink-m)">LVL ${p.level||1}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    // Renderizar avatares
+    el.querySelectorAll('canvas[data-av]').forEach(cv=>{
+      if(typeof drawAvatar==='function') drawAvatar(cv.getContext('2d'), cv.dataset.av, 36);
+    });
+  }
+
+  // ── PEDIDOS ──────────────────────────────────────────
+  function escutarPedidos(uid) {
+    // Amizade
+    const qAmiz = query(collection(db,'friendRequests'), where('to','==',uid), where('status','==','pending'));
+    const uAmiz = onSnapshot(qAmiz, snap => {
+      atualizarBadgePedidos(snap.size);
+    });
+    // XP
+    const qXp = query(collection(db,'xpRequests'), where('to','==',uid), where('status','==','pending'));
+    const uXp = onSnapshot(qXp, snap2 => {});
+    socialUnsubs.push(uAmiz, uXp);
+  }
+
+  function atualizarBadgePedidos(total) {
+    const badge = document.getElementById('social-pedidos-count');
+    const notif = document.getElementById('social-notif-badge');
+    if(total > 0) {
+      if(badge) { badge.textContent=total; badge.style.display=''; }
+      if(notif) notif.style.display='';
+    } else {
+      if(badge) badge.style.display='none';
+      if(notif) notif.style.display='none';
+    }
+  }
+
+  async function carregarPedidos() {
+    if(!socialUser) return;
+    const amizEl = document.getElementById('social-pedidos-amizade');
+    const xpEl = document.getElementById('social-pedidos-xp');
+    const emptyEl = document.getElementById('social-pedidos-empty');
+    amizEl.innerHTML=''; xpEl.innerHTML='';
+
+    // Pedidos de amizade recebidos
+    const qA = query(collection(db,'friendRequests'), where('to','==',socialUser.uid), where('status','==','pending'));
+    const snapA = await getDocs(qA);
+    let hasItems = false;
+
+    if(!snapA.empty) {
+      hasItems = true;
+      amizEl.innerHTML = '<div style="font-family:var(--font-vt);font-size:.85rem;color:var(--amber-l);letter-spacing:.1em;margin-bottom:8px">[ PEDIDOS DE AMIZADE ]</div>';
+      for(const d of snapA.docs) {
+        const req = d.data();
+        const fromSnap = await getDoc(doc(db,'users',req.from));
+        const from = fromSnap.exists() ? fromSnap.data() : {displayName:'?',tag:'????',level:1,avatar:'rookie_m'};
+        amizEl.innerHTML += `<div class="social-card">
+          <div style="display:flex;align-items:center;gap:10px">
+            <canvas width="36" height="36" style="image-rendering:pixelated;border:1px solid var(--green-l);border-radius:2px" data-av="${from.avatar||'rookie_m'}"></canvas>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:var(--font-pixel);font-size:.38rem;color:var(--ink)">${from.displayName}</div>
+              <div style="font-family:var(--font-vt);font-size:.82rem;color:var(--ink-f)">#${from.tag}</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0">
+              <button class="btn-green" onclick="aceitarAmizade('${d.id}','${req.from}')" style="font-size:.7rem;padding:5px 9px">✓ Aceitar</button>
+              <button class="btn-red" onclick="recusarPedido('${d.id}','friendRequests')" style="font-size:.7rem;padding:5px 9px">✗</button>
+            </div>
+          </div>
+        </div>`;
+      }
+      amizEl.querySelectorAll('canvas[data-av]').forEach(cv=>{
+        if(typeof drawAvatar==='function') drawAvatar(cv.getContext('2d'), cv.dataset.av, 36);
+      });
+    }
+
+    // Pedidos de XP recebidos
+    const qX = query(collection(db,'xpRequests'), where('to','==',socialUser.uid), where('status','==','pending'));
+    const snapX = await getDocs(qX);
+    if(!snapX.empty) {
+      hasItems = true;
+      xpEl.innerHTML = '<div style="font-family:var(--font-vt);font-size:.85rem;color:var(--amber-l);letter-spacing:.1em;margin-top:12px;margin-bottom:8px">[ PEDIDOS DE XP ]</div>';
+      for(const d of snapX.docs) {
+        const req = d.data();
+        const fromSnap = await getDoc(doc(db,'users',req.from));
+        const from = fromSnap.exists() ? fromSnap.data() : {displayName:'?',tag:'????',avatar:'rookie_m'};
+        const amount = req.amount||10;
+        xpEl.innerHTML += `<div class="social-card" style="border-color:rgba(243,156,18,.4)">
+          <div style="display:flex;align-items:center;gap:10px">
+            <canvas width="36" height="36" style="image-rendering:pixelated;border:1px solid var(--amber);border-radius:2px" data-av="${from.avatar||'rookie_m'}"></canvas>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:var(--font-pixel);font-size:.36rem;color:var(--amber-l)">${from.displayName}</div>
+              <div style="font-family:var(--font-vt);font-size:.88rem;color:var(--ink-m)">Quer ${amount} XP de você ⚡</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0">
+              <button class="btn-orange" onclick="enviarXP('${req.from}','${d.id}',${amount})" style="font-size:.7rem;padding:5px 9px">⚡ Dar</button>
+              <button class="btn-red" onclick="recusarPedido('${d.id}','xpRequests')" style="font-size:.7rem;padding:5px 9px">✗</button>
+            </div>
+          </div>
+        </div>`;
+      }
+      xpEl.querySelectorAll('canvas[data-av]').forEach(cv=>{
+        if(typeof drawAvatar==='function') drawAvatar(cv.getContext('2d'), cv.dataset.av, 36);
+      });
+    }
+
+    emptyEl.style.display = hasItems ? 'none' : '';
+  }
+
+  // ── BUSCA ─────────────────────────────────────────────
+  let searchTimeout = null;
+  window.socialBuscarDebounce = function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(()=>socialBuscar(), 500);
+  };
+
+  window.socialBuscar = async function() {
+    if(!socialUser) return;
+    const q = document.getElementById('social-search-input').value.trim();
+    const el = document.getElementById('social-search-results');
+    if(!q) { el.innerHTML=''; return; }
+    el.innerHTML = '<div style="text-align:center;padding:16px;font-family:var(--font-vt);color:var(--ink-f)"><span class="spinner"></span> Buscando...</div>';
+
+    // Busca por nome (case sensitive limitado — Firestore básico)
+    const byName = await getDocs(query(
+      collection(db,'users'),
+      where('displayName','>=',q.toUpperCase()),
+      where('displayName','<=',q.toUpperCase()+'\uf8ff'),
+      limit(5)
+    ));
+    const byTag = await getDocs(query(
+      collection(db,'users'),
+      where('tag','>=',q.toLowerCase()),
+      where('tag','<=',q.toLowerCase()+'\uf8ff'),
+      limit(5)
+    ));
+
+    const seen = new Set();
+    const results = [];
+    [...byName.docs,...byTag.docs].forEach(d=>{
+      if(!seen.has(d.id) && d.id!==socialUser.uid) {
+        seen.add(d.id);
+        results.push({uid:d.id,...d.data()});
+      }
+    });
+
+    if(!results.length) {
+      el.innerHTML='<div style="text-align:center;padding:16px;font-family:var(--font-vt);color:var(--ink-f)">Nenhum jogador encontrado.</div>';
+      return;
+    }
+
+    // Verificar status de amizade para cada
+    const fSnap = await getDocs(collection(db,'users',socialUser.uid,'friends'));
+    const myFriends = new Set(fSnap.docs.map(d=>d.id));
+    const sentSnap = await getDocs(query(collection(db,'friendRequests'),where('from','==',socialUser.uid),where('status','==','pending')));
+    const sentTo = new Set(sentSnap.docs.map(d=>d.data().to));
+
+    el.innerHTML = results.map(u => {
+      const jaAmigo = myFriends.has(u.uid);
+      const enviado = sentTo.has(u.uid);
+      return socialCardHTML(u, jaAmigo ? 'amigo' : (enviado ? 'enviado' : 'nenhum'));
+    }).join('');
+    el.querySelectorAll('canvas[data-av]').forEach(cv=>{
+      if(typeof drawAvatar==='function') drawAvatar(cv.getContext('2d'), cv.dataset.av, 36);
+    });
+  };
+
+  // ── Ações ─────────────────────────────────────────────
+  window.enviarPedidoAmizade = async function(toUid) {
+    if(!socialUser) return;
+    // Verificar se já existe
+    const existing = await getDocs(query(collection(db,'friendRequests'),where('from','==',socialUser.uid),where('to','==',toUid)));
+    if(!existing.empty) { showToast('Pedido já enviado!','amber'); return; }
+    await addDoc(collection(db,'friendRequests'),{
+      from: socialUser.uid,
+      to: toUid,
+      status: 'pending',
+      createdAt: serverTimestamp()
+    });
+    showToast('Pedido de amizade enviado! ✦','green');
+    socialTab('buscar');
+  };
+
+  window.aceitarAmizade = async function(reqId, fromUid) {
+    if(!socialUser) return;
+    await updateDoc(doc(db,'friendRequests',reqId),{status:'accepted'});
+    await setDoc(doc(db,'users',socialUser.uid,'friends',fromUid),{since:serverTimestamp()});
+    await setDoc(doc(db,'users',fromUid,'friends',socialUser.uid),{since:serverTimestamp()});
+    showToast('Amizade aceita! 🎉','green');
+    carregarPedidos();
+  };
+
+  window.recusarPedido = async function(id, col) {
+    await deleteDoc(doc(db, col, id));
+    showToast('Pedido recusado.','amber');
+    carregarPedidos();
+  };
+
+  window.removerAmigo = async function(uid) {
+    if(!socialUser || !confirm('Remover este amigo?')) return;
+    await deleteDoc(doc(db,'users',socialUser.uid,'friends',uid));
+    await deleteDoc(doc(db,'users',uid,'friends',socialUser.uid));
+    showToast('Amigo removido.','amber');
+    carregarAmigos();
+  };
+
+  window.verPerfil = async function(uid) {
+    const snap = await getDoc(doc(db,'users',uid));
+    if(!snap.exists()) { showToast('Perfil não encontrado.','red'); return; }
+    const p = snap.data();
+    const isMe = uid===socialUser?.uid;
+    // Verificar amizade
+    let jaAmigo=false;
+    if(socialUser && !isMe) {
+      const fs = await getDoc(doc(db,'users',socialUser.uid,'friends',uid));
+      jaAmigo = fs.exists();
+    }
+    const el = document.getElementById('perfil-amigo-content');
+    el.innerHTML = `
+      <div style="text-align:center">
+        <canvas id="perfil-av-canvas" width="64" height="64" style="image-rendering:pixelated;border:2px solid var(--amber);border-radius:4px;margin:0 auto 10px;display:block"></canvas>
+        <div style="font-family:var(--font-pixel);font-size:.52rem;color:var(--amber-l);margin-bottom:4px">${p.displayName}</div>
+        <div style="font-family:var(--font-vt);font-size:.9rem;color:var(--ink-f);margin-bottom:10px">#${p.tag}</div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px">
+          <div class="social-stat-pill">⚡ ${p.totalXP||0} XP</div>
+          <div class="social-stat-pill">🎮 LVL ${p.level||1}</div>
+          <div class="social-stat-pill" style="color:var(--amber-l)">${getLevelLabel(p.level||1)}</div>
+        </div>
+      </div>`;
+    const cv = document.getElementById('perfil-av-canvas');
+    if(typeof drawAvatar==='function') drawAvatar(cv.getContext('2d'), p.avatar||'rookie_m', 64);
+    const btnsEl = document.getElementById('perfil-amigo-btns');
+    btnsEl.innerHTML = '';
+    if(socialUser && !isMe) {
+      if(jaAmigo) {
+        btnsEl.innerHTML = `
+          <button class="btn-orange" onclick="abrirEnviarXP('${uid}','${p.displayName}')" style="flex:1;justify-content:center;padding:9px">⚡ Enviar XP</button>
+          <button class="btn-blue" onclick="pedirXP('${uid}','${p.displayName}')" style="flex:1;justify-content:center;padding:9px">🙏 Pedir XP</button>
+          <button class="btn-red" onclick="removerAmigo('${uid}')" style="padding:9px 12px">✗</button>`;
+      } else {
+        btnsEl.innerHTML = `<button class="btn-green" onclick="enviarPedidoAmizade('${uid}')" style="flex:1;justify-content:center;padding:9px">✦ Adicionar Amigo</button>`;
+      }
+    }
+    fecharModal('modal-social');
+    document.getElementById('modal-perfil-amigo').classList.add('ativo');
+  };
+
+  window.abrirEnviarXP = function(toUid, nome) {
+    const amount = prompt(`Quantos XP quer dar para ${nome}? (máx: 50)`);
+    if(!amount || isNaN(amount) || +amount<=0) return;
+    const v = Math.min(50, Math.abs(parseInt(amount)));
+    enviarXPDireto(toUid, v);
+  };
+
+  async function enviarXPDireto(toUid, amount) {
+    if(!socialUser) return;
+    if(typeof perderXP==='function') perderXP(amount, `→ XP enviado`);
+    // Registrar no Firestore para o receiver ganhar
+    await addDoc(collection(db,'xpGifts'),{
+      from: socialUser.uid,
+      to: toUid,
+      amount,
+      createdAt: serverTimestamp(),
+      status: 'pending'
+    });
+    // Atualizar XP do receiver diretamente
+    const toRef = doc(db,'users',toUid);
+    const toSnap = await getDoc(toRef);
+    if(toSnap.exists()) {
+      await updateDoc(toRef, { totalXP: (toSnap.data().totalXP||0)+amount });
+    }
+    showToast(`⚡ +${amount} XP enviado!`,'amber');
+    await syncUserProfile(socialUser);
+  }
+
+  window.enviarXP = async function(toUid, reqId, amount) {
+    await recusarPedido(reqId, 'xpRequests');
+    await enviarXPDireto(toUid, amount);
+  };
+
+  window.pedirXP = async function(toUid, nome) {
+    const amount = prompt(`Quantos XP quer pedir para ${nome}? (máx: 30)`);
+    if(!amount || isNaN(amount) || +amount<=0) return;
+    const v = Math.min(30, Math.abs(parseInt(amount)));
+    if(!socialUser) return;
+    await addDoc(collection(db,'xpRequests'),{
+      from: socialUser.uid,
+      to: toUid,
+      amount: v,
+      status: 'pending',
+      createdAt: serverTimestamp()
+    });
+    showToast(`🙏 Pedido de ${v} XP enviado!`,'blue');
+  };
+
+  // ── Helper card HTML ──────────────────────────────────
+  function socialCardHTML(u, status) {
+    let actionBtn = '';
+    if(status==='amigo') {
+      actionBtn = `<button class="btn-green" onclick="verPerfil('${u.uid}')" style="font-size:.7rem;padding:5px 9px">Ver</button>
+                   <button class="btn-orange" onclick="abrirEnviarXP('${u.uid}','${u.displayName||'?'}')" style="font-size:.7rem;padding:5px 9px">⚡</button>`;
+    } else if(status==='enviado') {
+      actionBtn = `<span style="font-family:var(--font-vt);font-size:.82rem;color:var(--ink-f)">Enviado...</span>`;
+    } else {
+      actionBtn = `<button class="btn-green" onclick="enviarPedidoAmizade('${u.uid}')" style="font-size:.7rem;padding:5px 9px">+ Add</button>
+                   <button class="btn-blue" onclick="verPerfil('${u.uid}')" style="font-size:.7rem;padding:5px 9px">Ver</button>`;
+    }
+    return `<div class="social-card">
+      <div style="display:flex;align-items:center;gap:10px">
+        <canvas width="36" height="36" style="image-rendering:pixelated;border:1px solid var(--line-s);border-radius:2px;cursor:pointer" data-av="${u.avatar||'rookie_m'}" onclick="verPerfil('${u.uid}')"></canvas>
+        <div style="flex:1;min-width:0;cursor:pointer" onclick="verPerfil('${u.uid}')">
+          <div style="font-family:var(--font-pixel);font-size:.38rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.displayName||'?'}</div>
+          <div style="display:flex;gap:6px;align-items:center;margin-top:2px">
+            <span style="font-family:var(--font-vt);font-size:.78rem;color:var(--ink-f)">#${u.tag||'????'}</span>
+            <span style="font-family:var(--font-vt);font-size:.78rem;color:var(--amber-l)">LVL ${u.level||1}</span>
+            <span style="font-family:var(--font-vt);font-size:.75rem;color:var(--ink-m)">⚡${u.totalXP||0}</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:5px;flex-shrink:0">${actionBtn}</div>
+      </div>
+    </div>`;
+  }
+
+  // ── Expor abrirSocial ──────────────────────────────────
+  window.abrirSocial = function() {
+    document.getElementById('modal-social').classList.add('ativo');
+    if(socialUser) {
+      syncUserProfile(socialUser).then(()=>mostrarPainelLogado());
+    }
+  };
+</script>
 
 <script src="script.js"></script>
 </body>
