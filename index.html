@@ -482,7 +482,7 @@
     <p style="margin-bottom:16px;color:var(--ink-m);font-size:.9rem">Opções do app</p>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
       <button class="btn-blue" onclick="reiniciarTutorial()" style="width:100%;justify-content:center;padding:10px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:5px"><rect x="2" y="1" width="8" height="13" fill="#1565c0"/><rect x="2" y="1" width="8" height="1" fill="#7dd3fc"/><rect x="3" y="3" width="5" height="1" fill="#7dd3fc"/><rect x="3" y="5" width="5" height="1" fill="#7dd3fc"/><rect x="3" y="7" width="5" height="1" fill="#4a9"/><rect x="10" y="2" width="4" height="12" fill="#0d47a1"/><rect x="2" y="13" width="12" height="1" fill="#7dd3fc"/></svg> Ver Tutorial</button>
-      <button class="btn-orange" onclick="abrirADM()" style="width:100%;justify-content:center;padding:10px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:5px"><rect x="5" y="1" width="6" height="6" fill="#f39c12"/><rect x="4" y="3" width="2" height="4" fill="#e67e22"/><rect x="10" y="3" width="2" height="4" fill="#e67e22"/><rect x="2" y="7" width="12" height="8" fill="#e67e22"/><rect x="2" y="7" width="12" height="1" fill="#fcd34d"/><rect x="6" y="10" width="4" height="3" fill="#f39c12"/><rect x="7" y="10" width="2" height="2" fill="#fcd34d"/></svg> Opções de ADM</button>
+      <button class="btn-orange" id="btn-adm-config" onclick="abrirADM()" style="width:100%;justify-content:center;padding:10px;display:none"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:5px"><rect x="5" y="1" width="6" height="6" fill="#f39c12"/><rect x="4" y="3" width="2" height="4" fill="#e67e22"/><rect x="10" y="3" width="2" height="4" fill="#e67e22"/><rect x="2" y="7" width="12" height="8" fill="#e67e22"/><rect x="2" y="7" width="12" height="1" fill="#fcd34d"/><rect x="6" y="10" width="4" height="3" fill="#f39c12"/><rect x="7" y="10" width="2" height="2" fill="#fcd34d"/></svg> Opções de ADM</button>
     </div>
     <p style="color:var(--ink-f);font-size:.78rem;font-family:var(--font-vt);letter-spacing:.06em;margin-bottom:14px">Feito com carinho por @PrazerSouoGui</p>
     <button class="btn-red" onclick="fecharModal('modal-configuracoes')" style="width:100%;justify-content:center">Fechar</button>
@@ -662,11 +662,8 @@
   import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, onSnapshot, serverTimestamp, orderBy, limit, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ═══════════════════════════════════════════════════════
-  //  🔥 CONFIGURAÇÃO FIREBASE — substitua com seus dados!
+  //  🔥 CONFIGURAÇÃO FIREBASE
   // ═══════════════════════════════════════════════════════
-  // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDa5OSByIU8xdtXA04jM7f6P8ASbeYhzdo",
@@ -679,14 +676,9 @@ import { getAnalytics } from "firebase/analytics";
   };
 
   // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Serviços que você vai usar
-const analytics = getAnalytics(app);
+  const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-
-  export { auth, db };
 
   // ── Utils ────────────────────────────────────────────
   function gerarTag(nome) {
@@ -715,13 +707,25 @@ const analytics = getAnalytics(app);
   let socialUnsubs = [];
 
   // ── Auth state listener ──────────────────────────────
+  const ADMIN_EMAIL = 'guirafacunha@gmail.com';
   onAuthStateChanged(auth, async (user) => {
     socialUser = user;
     if(user) {
+      // Verificar se é o admin
+      window._isAdmin = (user.email === ADMIN_EMAIL);
+      // Mostrar/ocultar botão ADM no Config
+      const btnAdm = document.getElementById('btn-adm-config');
+      if (btnAdm) btnAdm.style.display = window._isAdmin ? 'flex' : 'none';
+      // Recriar tabela respeitando permissão
+      if (typeof montarTabela === 'function') montarTabela();
       await syncUserProfile(user);
       mostrarPainelLogado();
       escutarPedidos(user.uid);
     } else {
+      window._isAdmin = false;
+      const btnAdm = document.getElementById('btn-adm-config');
+      if (btnAdm) btnAdm.style.display = 'none';
+      if (typeof montarTabela === 'function') montarTabela();
       mostrarPainelLogin();
     }
   });

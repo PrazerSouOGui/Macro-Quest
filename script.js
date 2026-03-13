@@ -1,3 +1,6 @@
+const ADMIN_EMAIL = 'guirafacunha@gmail.com';
+window._isAdmin = false;
+
 var _$_=id=>document.getElementById(id);
 const DB=[
   ["Arroz branco cozido",128,2.5,28.1,0.2],["Arroz integral cozido",124,2.6,25.8,1.0],
@@ -647,10 +650,10 @@ function montarTabela(){
   <td data-label="Meta Prot"><input type="number" class="meta" id="meta-prot-${i}" value="${r.prot}" readonly></td>
   <td data-label="Meta Carbo"><input type="number" class="meta" id="meta-carbo-${i}" value="${r.carbo}" readonly></td>
   <td data-label="Meta Gord"><input type="number" class="meta" id="meta-gord-${i}" value="${r.gord}" readonly></td>
-  <td data-label="Consumido kcal"><input type="number" id="kcal-${i}" value="0"></td>
-  <td data-label="Consumido Prot"><input type="number" id="prot-${i}" value="0"></td>
-  <td data-label="Consumido Carbo"><input type="number" id="carbo-${i}" value="0"></td>
-  <td data-label="Consumido Gord"><input type="number" id="gord-${i}" value="0"></td>`;
+  <td data-label="Consumido kcal"><input type="number" id="kcal-${i}" value="0" ${window._isAdmin ? '' : 'readonly style="opacity:.55;cursor:not-allowed"'}></td>
+  <td data-label="Consumido Prot"><input type="number" id="prot-${i}" value="0" ${window._isAdmin ? '' : 'readonly style="opacity:.55;cursor:not-allowed"'}></td>
+  <td data-label="Consumido Carbo"><input type="number" id="carbo-${i}" value="0" ${window._isAdmin ? '' : 'readonly style="opacity:.55;cursor:not-allowed"'}></td>
+  <td data-label="Consumido Gord"><input type="number" id="gord-${i}" value="0" ${window._isAdmin ? '' : 'readonly style="opacity:.55;cursor:not-allowed"'}></td>`;
   tbody.appendChild(tr);
   ['kcal','prot','carbo','gord'].forEach(k=>{
   _$_(`${k}-${i}`).addEventListener('input',()=>{calcular();salvarDados()});
@@ -804,7 +807,13 @@ function finalizarRefeicao(){
   if(el) el.value=n2(tv(el.value)+m[k]);
   });
   });
-  ingredientesTemp=[]; renderLista(); fecharPopup('popup-add'); calcular(); salvarDados();
+  ingredientesTemp=[]; renderLista(); fecharPopup('popup-add'); calcular();
+  // Registrar hora da 1ª refeição do dia
+  if (window._firstMealHour === null || window._firstMealHour === undefined) {
+    const _now = new Date();
+    window._firstMealHour = _now.getHours() + _now.getMinutes() / 60;
+  }
+  salvarDados();
 }
 function renderLista(){
   const div=_$_('ingredient-list');
@@ -1412,7 +1421,9 @@ function salvarDados(){
   o[k]=el?tv(el.value):0; return o;
   },{}));
   localStorage.setItem('dadosMacros',JSON.stringify({
-  refeicoes, userRefeicoes, metas, cons, agua:aguaML, aguaMeta
+  refeicoes, userRefeicoes, metas, cons, agua:aguaML, aguaMeta,
+  firstMealHour: window._firstMealHour !== undefined ? window._firstMealHour : null,
+  lastResetDate: window._lastResetDate || null
   }));
 }
 function carregarDados(){
@@ -1439,6 +1450,25 @@ function carregarDados(){
   }
   if(d.agua!==undefined) aguaML=d.agua;
   if(d.aguaMeta) aguaMeta=d.aguaMeta;
+  // Restaurar controle de reset diário
+  window._firstMealHour = (d.firstMealHour !== undefined && d.firstMealHour !== null) ? d.firstMealHour : null;
+  window._lastResetDate = d.lastResetDate || null;
+  // Verificar se deve resetar consumidos (novo "dia" baseado na hora da 1ª refeição)
+  const _agora = new Date();
+  const _hoje = _agora.toDateString();
+  const _horaAtual = _agora.getHours() + _agora.getMinutes() / 60;
+  const _resetHour = (window._firstMealHour !== null) ? window._firstMealHour : 0;
+  if (window._lastResetDate && window._lastResetDate !== _hoje) {
+    // É um dia diferente — só reseta se já passou da hora da 1ª refeição
+    if (_horaAtual >= _resetHour || !window._firstMealHour) {
+      userRefeicoes = refeicoes.map(() => []);
+      refeicoes.forEach((_, i) => ['kcal','prot','carbo','gord'].forEach(k => { const el=_$_(`${k}-${i}`); if(el) el.value=0; }));
+      window._lastResetDate = _hoje;
+      window._firstMealHour = null; // resetar para nova 1ª refeição
+    }
+  } else if (!window._lastResetDate) {
+    window._lastResetDate = _hoje;
+  }
   atualizarAgua();
   calcular();
 }
@@ -3253,12 +3283,19 @@ window.abrirConfiguracoes = function() {
 };
 
 window.abrirADM = function() {
-  // Close modal first so prompt() shows above everything
+  // Se for o admin logado, entrar sem senha
+  if (window._isAdmin) {
+    document.getElementById('modal-configuracoes').classList.remove('ativo');
+    admRefresh();
+    document.getElementById('modal-adm').classList.add('ativo');
+    if(typeof showToast === 'function') showToast('⚡ Bem-vindo, ADM!', 'green');
+    return;
+  }
+  // Fallback: senha para outros (não deve aparecer para usuários normais)
   document.getElementById('modal-configuracoes').classList.remove('ativo');
   setTimeout(function() {
     const senha = prompt('[ ADM ] Senha:');
     if(senha === null) {
-      // Reopen config if cancelled
       document.getElementById('modal-configuracoes').classList.add('ativo');
       return;
     }
