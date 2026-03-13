@@ -2558,35 +2558,75 @@ const BACKGROUNDS = [
   { id: 'bg_olympus',   nome: 'Olimpo',          custo: 2500, lvlMin: 10, img: null /* 'assets/bg/olympus.png' */, desc: 'Somente os deuses chegam aqui' },
 ];
 
-function aplicarFundoAvatar() {
-  const frame = document.querySelector('.xp-avatar-frame');
-  if (!frame) return;
-  const bgId = xpData.equippedBackground;
+function desenharFundoNoCanvas(ctx, bgId, size) {
+  ctx.clearRect(0, 0, size, size);
   if (!bgId || bgId === 'bg_default') {
-    frame.style.backgroundImage = '';
-    frame.style.backgroundSize = '';
-    frame.style.backgroundPosition = '';
+    ctx.fillStyle = '#0e0e0e';
+    ctx.fillRect(0, 0, size, size);
     return;
   }
   const bg = BACKGROUNDS.find(b => b.id === bgId);
   if (bg && bg.img) {
-    frame.style.backgroundImage = 'url("' + bg.img + '")';
-    frame.style.backgroundSize = 'cover';
-    frame.style.backgroundPosition = 'center';
-  } else {
-    // Fundo sem imagem ainda — aplicar cor placeholder temática
-    const placeholders = {
-      bg_dungeon:  'radial-gradient(ellipse at 30% 70%, #1a0e05 0%, #2d1a08 50%, #0d0a06 100%)',
-      bg_arena:    'radial-gradient(ellipse at 50% 80%, #1a0505 0%, #3d0e0e 50%, #0d0505 100%)',
-      bg_forest:   'radial-gradient(ellipse at 40% 60%, #051a08 0%, #0e3d14 50%, #050d07 100%)',
-      bg_volcano:  'radial-gradient(ellipse at 50% 100%, #3d1a00 0%, #7a2e00 40%, #1a0800 100%)',
-      bg_sky:      'radial-gradient(ellipse at 50% 0%, #0a1a3d 0%, #1a3d7a 50%, #050d1a 100%)',
-      bg_void:     'radial-gradient(ellipse at 50% 50%, #0d0520 0%, #1a0a3d 50%, #050208 100%)',
-      bg_olympus:  'radial-gradient(ellipse at 50% 20%, #3d3000 0%, #7a6200 40%, #1a1500 100%)',
+    // Imagem real — carregar e redesenhar skin por cima de forma assíncrona
+    const imgEl = new Image();
+    imgEl.onload = () => {
+      ctx.drawImage(imgEl, 0, 0, size, size);
+      drawAvatar(ctx, xpData.equippedAvatar, size);
     };
-    frame.style.backgroundImage = placeholders[bgId] || '';
-    frame.style.backgroundSize = 'cover';
+    imgEl.onerror = () => {
+      ctx.fillStyle = '#0e0e0e';
+      ctx.fillRect(0, 0, size, size);
+      drawAvatar(ctx, xpData.equippedAvatar, size);
+    };
+    imgEl.src = bg.img;
+    // Enquanto carrega, fundo escuro para não ficar branco
+    ctx.fillStyle = '#0e0e0e';
+    ctx.fillRect(0, 0, size, size);
+    return;
   }
+  // Gradientes placeholder (síncronos)
+  const gradients = {
+    bg_dungeon:  { cx:0.35, cy:0.7,  c0:'#2d1a08', c1:'#1a0d05', c2:'#090705' },
+    bg_arena:    { cx:0.5,  cy:0.8,  c0:'#4a1010', c1:'#2a0808', c2:'#0d0404' },
+    bg_forest:   { cx:0.4,  cy:0.55, c0:'#124d18', c1:'#082e0c', c2:'#041507' },
+    bg_volcano:  { cx:0.5,  cy:1.0,  c0:'#8c3200', c1:'#4a1800', c2:'#150800' },
+    bg_sky:      { cx:0.5,  cy:0.05, c0:'#1e5fa0', c1:'#0e2d5a', c2:'#050e1e' },
+    bg_void:     { cx:0.5,  cy:0.5,  c0:'#2a0d5c', c1:'#12052e', c2:'#040210' },
+    bg_olympus:  { cx:0.5,  cy:0.15, c0:'#8c7200', c1:'#4a3c00', c2:'#1a1500' },
+  };
+  const g = gradients[bgId];
+  if (g) {
+    const grad = ctx.createRadialGradient(
+      size*g.cx, size*g.cy, 0,
+      size*0.5,  size*0.5,  size*0.85
+    );
+    grad.addColorStop(0,   g.c0);
+    grad.addColorStop(0.5, g.c1);
+    grad.addColorStop(1,   g.c2);
+    ctx.fillStyle = grad;
+  } else {
+    ctx.fillStyle = '#0e0e0e';
+  }
+  ctx.fillRect(0, 0, size, size);
+  // Pixel art texture overlay sutil
+  ctx.globalAlpha = 0.07;
+  for (let y = 0; y < size; y += 4) {
+    for (let x = 0; x < size; x += 4) {
+      if ((x + y) % 8 === 0) {
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(x, y, 2, 2);
+      }
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+function aplicarFundoAvatar() {
+  // O fundo agora é desenhado diretamente no canvas (via desenharFundoNoCanvas)
+  // Esta função só limpa o background CSS do frame para evitar duplicação
+  const frame = document.querySelector('.xp-avatar-frame');
+  if (!frame) return;
+  frame.style.backgroundImage = '';
 }
 function salvarXPPerfil() {
   const name = _$_('xp-name-input').value.trim();
@@ -2649,8 +2689,21 @@ function renderXPCard() {
   _$_('xp-bar').style.width = pct + '%';
   _$_('xp-bar-label').textContent = barLabel;
   const canvas = _$_('avatar-canvas');
+  const SZ = 96;
+  canvas.width = SZ; canvas.height = SZ;
   const ctx = canvas.getContext('2d');
-  drawAvatar(ctx, xpData.equippedAvatar, 72);
+  // desenharFundoNoCanvas desenha o fundo; se async (img real) chama drawAvatar no onload
+  // Para fundo síncrono (gradiente), desenhamos a skin logo em seguida
+  const bgId = xpData.equippedBackground;
+  const bg = BACKGROUNDS.find(b => b.id === bgId);
+  if (bg && bg.img) {
+    // Assíncrono — desenharFundoNoCanvas cuida de tudo
+    desenharFundoNoCanvas(ctx, bgId, SZ);
+  } else {
+    // Síncrono — fundo primeiro, skin em cima
+    desenharFundoNoCanvas(ctx, bgId, SZ);
+    drawAvatar(ctx, xpData.equippedAvatar, SZ);
+  }
   aplicarFundoAvatar();
 }
 function mostrarXPGain(amount, positivo=true, label='') {
@@ -2799,16 +2852,35 @@ function confirmarLevelUp() {
     }
   }
 }
-function abrirAvatarShop() {
+function lojaTab(tab) {
+  const isSkins = tab === 'skins';
+  _$_('loja-panel-skins').style.display = isSkins ? '' : 'none';
+  _$_('loja-panel-fundos').style.display = isSkins ? 'none' : '';
+  const tSkins = _$_('loja-tab-skins');
+  const tFundos = _$_('loja-tab-fundos');
+  if (tSkins) {
+    tSkins.style.borderBottomColor = isSkins ? 'var(--amber)' : 'transparent';
+    tSkins.style.background = isSkins ? 'var(--card)' : 'transparent';
+    tSkins.style.color = isSkins ? 'var(--amber-l)' : 'var(--ink-f)';
+  }
+  if (tFundos) {
+    tFundos.style.borderBottomColor = !isSkins ? 'var(--amber)' : 'transparent';
+    tFundos.style.background = !isSkins ? 'var(--card)' : 'transparent';
+    tFundos.style.color = !isSkins ? 'var(--amber-l)' : 'var(--ink-f)';
+  }
+  if (isSkins) renderAvatarGrid();
+  else { renderBackgroundGrid(); }
   _$_('shop-xp-display').textContent = xpData.totalXP;
-  renderAvatarGrid();
+}
+function abrirAvatarShop(aba) {
+  _$_('shop-xp-display').textContent = xpData.totalXP;
   abrirModal('modal-avatar-shop');
+  lojaTab(aba || 'skins');
 }
 function abrirBackgroundShop() {
-  _$_('bg-shop-xp-display').textContent = xpData.totalXP;
-  renderBackgroundGrid();
-  abrirModal('modal-background-shop');
+  abrirAvatarShop('fundos');
 }
+
 function renderBackgroundGrid() {
   const grid = _$_('background-grid');
   grid.innerHTML = '';
@@ -2877,7 +2949,7 @@ function renderBackgroundGrid() {
           aplicarFundoAvatar();
           renderXPCard();
           renderBackgroundGrid();
-          _$_('bg-shop-xp-display').textContent = xpData.totalXP;
+          _$_('shop-xp-display').textContent = xpData.totalXP;
           showToast('Fundo equipado: <b>' + bg.nome + '</b>!', 'amber', 3000);
         }
       } else {
@@ -2888,7 +2960,7 @@ function renderBackgroundGrid() {
         renderXPCard();
         renderBackgroundGrid();
         showToast('Fundo: <b>' + bg.nome + '</b>!', 'amber', 2000);
-        setTimeout(() => fecharModal('modal-background-shop'), 500);
+        setTimeout(() => fecharModal('modal-avatar-shop'), 500);
       }
     });
     grid.appendChild(item);
