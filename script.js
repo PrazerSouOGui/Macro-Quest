@@ -2618,20 +2618,43 @@ function renderXPCard() {
   _$_('xp-bar').style.width = pct + '%';
   _$_('xp-bar-label').textContent = barLabel;
   const canvas = _$_('avatar-canvas');
-  const SZ = 96;
+  const SZ = 72;
   canvas.width = SZ; canvas.height = SZ;
   const ctx = canvas.getContext('2d');
-  // desenharFundoNoCanvas desenha o fundo; se async (img real) chama drawAvatar no onload
-  // Para fundo síncrono (gradiente), desenhamos a skin logo em seguida
-  const bgId = xpData.equippedBackground;
-  const bg = BACKGROUNDS.find(b => b.id === bgId);
-  if (bg && bg.img) {
-    // Assíncrono — desenharFundoNoCanvas cuida de tudo
-    desenharFundoNoCanvas(ctx, bgId, SZ);
+  ctx.imageSmoothingEnabled = false;
+  const bgId = xpData.equippedBackground || 'bg_default';
+
+  function _compositarAvatar() {
+    const tmp = document.createElement('canvas');
+    tmp.width = SZ; tmp.height = SZ;
+    const tctx = tmp.getContext('2d');
+    tctx.imageSmoothingEnabled = false;
+    drawAvatar(tctx, xpData.equippedAvatar || 'rookie_m', SZ);
+    ctx.clearRect(0, 0, SZ, SZ);
+    if (typeof desenharFundoNoCanvas === 'function') {
+      desenharFundoNoCanvas(ctx, bgId, SZ);
+    }
+    ctx.drawImage(tmp, 0, 0);
+  }
+
+  const bgObj = (typeof BACKGROUNDS !== 'undefined') ? BACKGROUNDS.find(b => b.id === bgId) : null;
+  if (bgObj && bgObj.img) {
+    const imgEl = new Image();
+    imgEl.onload = () => {
+      const tmp = document.createElement('canvas');
+      tmp.width = SZ; tmp.height = SZ;
+      const tctx = tmp.getContext('2d');
+      tctx.imageSmoothingEnabled = false;
+      drawAvatar(tctx, xpData.equippedAvatar || 'rookie_m', SZ);
+      ctx.clearRect(0, 0, SZ, SZ);
+      ctx.drawImage(imgEl, 0, 0, SZ, SZ);
+      ctx.drawImage(tmp, 0, 0);
+    };
+    imgEl.onerror = _compositarAvatar;
+    imgEl.src = bgObj.img;
+    _compositarAvatar();
   } else {
-    // Síncrono — fundo primeiro, skin em cima
-    desenharFundoNoCanvas(ctx, bgId, SZ);
-    drawAvatar(ctx, xpData.equippedAvatar, SZ);
+    _compositarAvatar();
   }
   aplicarFundoAvatar();
 }
@@ -3426,97 +3449,218 @@ window.abrirConfiguracoes = function() {
 };
 
 window.abrirADM = function() {
-  // Se for o admin logado, entrar sem senha
   if (window._isAdmin) {
     document.getElementById('modal-configuracoes').classList.remove('ativo');
     admRefresh();
+    admTab('meu');
     document.getElementById('modal-adm').classList.add('ativo');
     if(typeof showToast === 'function') showToast('⚡ Bem-vindo, ADM!', 'green');
     return;
   }
-  // Fallback: senha para outros (não deve aparecer para usuários normais)
   document.getElementById('modal-configuracoes').classList.remove('ativo');
   setTimeout(function() {
     const senha = prompt('[ ADM ] Senha:');
-    if(senha === null) {
-      document.getElementById('modal-configuracoes').classList.add('ativo');
-      return;
-    }
+    if(senha === null) { document.getElementById('modal-configuracoes').classList.add('ativo'); return; }
     if(senha === 'Gui14092006') {
       admRefresh();
+      admTab('meu');
       document.getElementById('modal-adm').classList.add('ativo');
-      if(typeof showToast === 'function') showToast('<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 12 12\" width=\"12\" height=\"12\" fill=\"none\" style=\"vertical-align:middle;margin-right:4px\"><rect x=\"1\" y=\"6\" width=\"2\" height=\"2\" fill=\"#6ee7b7\"/><rect x=\"3\" y=\"8\" width=\"2\" height=\"2\" fill=\"#6ee7b7\"/><rect x=\"5\" y=\"10\" width=\"2\" height=\"2\" fill=\"#6ee7b7\"/><rect x=\"7\" y=\"8\" width=\"2\" height=\"2\" fill=\"#6ee7b7\"/><rect x=\"9\" y=\"6\" width=\"2\" height=\"2\" fill=\"#6ee7b7\"/><rect x=\"9\" y=\"4\" width=\"2\" height=\"2\" fill=\"#6ee7b7\"/></svg> Acesso ADM liberado!', 'green');
+      if(typeof showToast === 'function') showToast('Acesso ADM liberado!', 'green');
     } else {
       document.getElementById('modal-configuracoes').classList.add('ativo');
-      if(typeof showToast === 'function') showToast('<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 12 12\" width=\"12\" height=\"12\" fill=\"none\" style=\"vertical-align:middle;margin-right:4px\"><rect x=\"2\" y=\"2\" width=\"2\" height=\"2\" fill=\"#fca5a5\"/><rect x=\"4\" y=\"4\" width=\"2\" height=\"2\" fill=\"#fca5a5\"/><rect x=\"6\" y=\"6\" width=\"2\" height=\"2\" fill=\"#fca5a5\"/><rect x=\"4\" y=\"8\" width=\"2\" height=\"2\" fill=\"#fca5a5\"/><rect x=\"2\" y=\"10\" width=\"2\" height=\"2\" fill=\"#fca5a5\"/><rect x=\"8\" y=\"2\" width=\"2\" height=\"2\" fill=\"#fca5a5\"/><rect x=\"8\" y=\"10\" width=\"2\" height=\"2\" fill=\"#fca5a5\"/></svg> Senha incorreta!', 'red');
+      if(typeof showToast === 'function') showToast('Senha incorreta!', 'red');
     }
   }, 150);
 };
 
+window.admTab = function(tab) {
+  ['meu','usuarios'].forEach(t => {
+    document.getElementById('adm-panel-'+t).style.display = t===tab?'':'none';
+    const btn = document.getElementById('adm-tab-'+t);
+    if(btn) btn.classList.toggle('active', t===tab);
+  });
+  if(tab==='usuarios') admBuscarUsuarios();
+};
+
 function admRefresh() {
   const xd = typeof xpData !== 'undefined' ? xpData : {};
-  const lvl = xd.level || 1;
-  const total = xd.totalXP || 0;
-  const pending = xd.pendingLevelUp || false;
   const el = document.getElementById('adm-debug-content');
+  if(!el) return;
   el.innerHTML = `
     <div style="background:var(--surface);border:1px dashed var(--amber);border-radius:3px;padding:12px;font-family:var(--font-vt);font-size:1rem;color:var(--ink);letter-spacing:.06em;line-height:2;text-align:left">
-      <div>◈ <b>Level:</b> <span style="color:var(--amber-l)">${lvl}</span></div>
-      <div>◆ <b>Total XP:</b> <span style="color:var(--amber-l)">${total}</span></div>
-      <div>◉ <b>Pending Level-Up:</b> <span style="color:${pending ? '#6ee7b7' : '#fca5a5'}">${pending ? 'SIM' : 'NÃO'}</span></div>
+      <div>◈ <b>Level:</b> <span style="color:var(--amber-l)">${xd.level||1}</span></div>
+      <div>◆ <b>Total XP:</b> <span style="color:var(--amber-l)">${xd.totalXP||0}</span></div>
+      <div>◉ <b>Pending Level-Up:</b> <span style="color:${xd.pendingLevelUp?'#6ee7b7':'#fca5a5'}">${xd.pendingLevelUp?'SIM':'NÃO'}</span></div>
     </div>
   `;
 }
 
-function admAddXP() {
-  if(typeof ganharXP === 'function') { ganharXP(50, 'ADM +50'); admRefresh(); }
-}
-function admRemXP() {
-  if(typeof perderXP === 'function') { perderXP(50, 'ADM -50'); admRefresh(); }
-}
+function admAddXP() { if(typeof ganharXP==='function'){ganharXP(50,'ADM +50');admRefresh();} }
+function admRemXP() { if(typeof perderXP==='function'){perderXP(50,'ADM -50');admRefresh();} }
 function admResetXP() {
-  if(confirm('[ADM] Resetar todo o XP? Esta acao e irreversivel.')) {
-    if(typeof xpData !== 'undefined') {
-      xpData.totalXP = 0;
-      xpData.level = 1;
-      xpData.pendingLevelUp = false;
-      if(typeof salvarXP === 'function') salvarXP();
-      if(typeof renderXP === 'function') renderXP();
+  if(confirm('[ADM] Resetar todo o XP? Esta ação é irreversível.')) {
+    if(typeof xpData!=='undefined') {
+      xpData.totalXP=0; xpData.level=1; xpData.pendingLevelUp=false;
+      if(typeof salvarXP==='function') salvarXP();
+      if(typeof renderXPCard==='function') renderXPCard();
       admRefresh();
-      showToast('XP resetado com sucesso!', 'amber');
+      showToast('XP resetado!','amber');
     }
   }
 }
 function admAddCustomXP() {
   const v = parseInt(document.getElementById('adm-xp-custom').value);
-  if(!v || v <= 0) { showToast('Digite um valor válido!', 'red'); return; }
-  if(typeof ganharXP === 'function') { ganharXP(v, 'ADM +' + v); admRefresh(); showToast('+' + v + ' XP adicionados!', 'green'); }
+  if(!v||v<=0){showToast('Valor inválido!','red');return;}
+  if(typeof ganharXP==='function'){ganharXP(v,'ADM +'+v);admRefresh();showToast('+'+v+' XP!','green');}
 }
 function admRemCustomXP() {
   const v = parseInt(document.getElementById('adm-xp-custom').value);
-  if(!v || v <= 0) { showToast('Digite um valor válido!', 'red'); return; }
-  if(typeof perderXP === 'function') { perderXP(v, 'ADM -' + v); admRefresh(); showToast('-' + v + ' XP removidos!', 'amber'); }
+  if(!v||v<=0){showToast('Valor inválido!','red');return;}
+  if(typeof perderXP==='function'){perderXP(v,'ADM -'+v);admRefresh();showToast('-'+v+' XP!','amber');}
 }
 function admSetXP() {
   const v = parseInt(document.getElementById('adm-xp-custom').value);
-  if(v === undefined || v === null || isNaN(v) || v < 0) { showToast('Digite um valor válido (>= 0)!', 'red'); return; }
-  if(typeof xpData !== 'undefined') {
-    xpData.totalXP = v;
-    // Recalculate level
-    if(typeof LEVELS !== 'undefined') {
-      let newLvl = 1;
-      for(let i = LEVELS.length - 1; i >= 0; i--) {
-        if(v >= LEVELS[i].xpReq) { newLvl = LEVELS[i].lvl; break; }
-      }
-      xpData.level = newLvl;
+  if(isNaN(v)||v<0){showToast('Valor inválido!','red');return;}
+  if(typeof xpData!=='undefined') {
+    xpData.totalXP=v;
+    if(typeof LEVELS!=='undefined') {
+      let nl=1;
+      for(let i=LEVELS.length-1;i>=0;i--){if(v>=LEVELS[i].xpReq){nl=LEVELS[i].lvl;break;}}
+      xpData.level=nl;
     }
-    xpData.pendingLevelUp = false;
-    if(typeof salvarXP === 'function') salvarXP();
-    if(typeof renderXPCard === 'function') renderXPCard();
+    xpData.pendingLevelUp=false;
+    if(typeof salvarXP==='function') salvarXP();
+    if(typeof renderXPCard==='function') renderXPCard();
     admRefresh();
-    showToast('XP definido para ' + v + '!', 'amber');
+    showToast('XP definido para '+v+'!','amber');
   }
 }
+
+// ── Gestão de Usuários (Firestore) ──────────────────────────────
+let _admUsuarioSelecionado = null;
+
+window.admBuscarUsuarios = async function() {
+  const input = document.getElementById('adm-search-input');
+  const results = document.getElementById('adm-search-results');
+  results.innerHTML = '<div style="font-family:var(--font-vt);color:var(--ink-f);font-size:.9rem;padding:8px">Buscando...</div>';
+  admFecharEdicao();
+  try {
+    // Pega os 30 usuários mais recentes por XP (fallback: todos)
+    const term = input ? input.value.trim().toLowerCase() : '';
+    const { getFirestore, collection, getDocs, query, orderBy, limit } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const db2 = getFirestore();
+    const q = query(collection(db2,'users'), orderBy('totalXP','desc'), limit(30));
+    const snap = await getDocs(q);
+    let users = snap.docs.map(d=>({uid:d.id,...d.data()}));
+    if(term) users = users.filter(u=>(u.displayName||'').toLowerCase().includes(term)||(u.email||'').toLowerCase().includes(term)||(u.tag||'').toLowerCase().includes(term));
+    if(!users.length) { results.innerHTML='<div style="font-family:var(--font-vt);color:var(--ink-f);font-size:.9rem;padding:8px">Nenhum usuário encontrado.</div>'; return; }
+    results.innerHTML = users.map(u=>`
+      <div class="social-card" style="cursor:pointer" onclick="admSelecionarUsuario('${u.uid}')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="flex:1;min-width:0">
+            <div style="font-family:var(--font-pixel);font-size:.36rem;color:${u.bloqueado?'#fca5a5':'var(--ink)'}">
+              ${u.displayName||'?'} ${u.bloqueado?'🔒':''}
+            </div>
+            <div style="font-family:var(--font-vt);font-size:.8rem;color:var(--ink-f);margin-top:2px">
+              #${u.tag||'????'} · LVL ${u.level||1} · ⚡${u.totalXP||0} XP
+            </div>
+          </div>
+          <button class="btn-blue" style="font-size:.7rem;padding:5px 9px;flex-shrink:0">Editar</button>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    results.innerHTML='<div style="font-family:var(--font-vt);color:#fca5a5;font-size:.9rem;padding:8px">Erro ao buscar usuários: '+e.message+'</div>';
+  }
+};
+
+window.admSelecionarUsuario = async function(uid) {
+  const editPanel = document.getElementById('adm-user-edit');
+  try {
+    const { getFirestore, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const snap = await getDoc(doc(getFirestore(),'users',uid));
+    if(!snap.exists()){ showToast('Usuário não encontrado.','red'); return; }
+    const u = {uid, ...snap.data()};
+    _admUsuarioSelecionado = u;
+    document.getElementById('adm-edit-nome').textContent = u.displayName||'?';
+    document.getElementById('adm-edit-info').innerHTML =
+      `<b>UID:</b> <span style="font-size:.78rem;word-break:break-all">${uid}</span><br>
+       <b>Email:</b> ${u.email||'N/A'}<br>
+       <b>Tag:</b> #${u.tag||'????'}<br>
+       <b>Level:</b> ${u.level||1} &nbsp; <b>XP:</b> ${u.totalXP||0}<br>
+       <b>Status:</b> <span style="color:${u.bloqueado?'#fca5a5':'#6ee7b7'}">${u.bloqueado?'🔒 BLOQUEADO':'✓ Ativo'}</span>`;
+    document.getElementById('adm-btn-bloquear').textContent = u.bloqueado ? '🔓 Desbloquear' : '🔒 Bloquear';
+    document.getElementById('adm-edit-xp-val').value = u.totalXP||0;
+    editPanel.style.display = '';
+    editPanel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  } catch(e) { showToast('Erro: '+e.message,'red'); }
+};
+
+window.admFecharEdicao = function() {
+  _admUsuarioSelecionado = null;
+  const p = document.getElementById('adm-user-edit');
+  if(p) p.style.display='none';
+};
+
+window.admEditarXPUsuario = async function(op) {
+  if(!_admUsuarioSelecionado){ showToast('Selecione um usuário!','red'); return; }
+  const val = parseInt(document.getElementById('adm-edit-xp-val').value);
+  if(isNaN(val)||val<0){ showToast('Valor inválido!','red'); return; }
+  const uid = _admUsuarioSelecionado.uid;
+  try {
+    const { getFirestore, doc, getDoc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const db2 = getFirestore();
+    const ref = doc(db2,'users',uid);
+    const snap = await getDoc(ref);
+    if(!snap.exists()){ showToast('Usuário não encontrado.','red'); return; }
+    let currentXP = snap.data().totalXP||0;
+    let newXP = op==='add' ? currentXP+val : op==='rem' ? Math.max(0,currentXP-val) : val;
+    // Recalcular level
+    let newLvl = 1;
+    if(typeof LEVELS!=='undefined'){
+      for(let i=LEVELS.length-1;i>=0;i--){if(newXP>=LEVELS[i].xpReq){newLvl=LEVELS[i].lvl;break;}}
+    }
+    await updateDoc(ref,{totalXP:newXP, level:newLvl});
+    _admUsuarioSelecionado.totalXP = newXP;
+    _admUsuarioSelecionado.level = newLvl;
+    showToast(`XP de ${_admUsuarioSelecionado.displayName||'?'} → ${newXP}!`,'green');
+    admSelecionarUsuario(uid);
+  } catch(e){ showToast('Erro: '+e.message,'red'); }
+};
+
+window.admToggleBloqueio = async function() {
+  if(!_admUsuarioSelecionado){ showToast('Selecione um usuário!','red'); return; }
+  const uid = _admUsuarioSelecionado.uid;
+  const novoBloqueio = !_admUsuarioSelecionado.bloqueado;
+  if(!confirm(`${novoBloqueio?'Bloquear':'Desbloquear'} o usuário ${_admUsuarioSelecionado.displayName||uid}?`)) return;
+  try {
+    const { getFirestore, doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    await updateDoc(doc(getFirestore(),'users',uid),{bloqueado:novoBloqueio});
+    _admUsuarioSelecionado.bloqueado = novoBloqueio;
+    showToast(`Usuário ${novoBloqueio?'bloqueado 🔒':'desbloqueado ✓'}!`, novoBloqueio?'red':'green');
+    admSelecionarUsuario(uid);
+  } catch(e){ showToast('Erro: '+e.message,'red'); }
+};
+
+window.admExcluirUsuario = async function() {
+  if(!_admUsuarioSelecionado){ showToast('Selecione um usuário!','red'); return; }
+  const u = _admUsuarioSelecionado;
+  if(!confirm(`⚠️ EXCLUIR permanentemente o usuário "${u.displayName||u.uid}"?\n\nEsta ação remove os dados do Firestore. O login (Firebase Auth) precisará ser removido separadamente no Console do Firebase.`)) return;
+  try {
+    const { getFirestore, doc, deleteDoc, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const db2 = getFirestore();
+    // Deletar subcoleções conhecidas
+    for(const sub of ['friends','xpGifts']) {
+      try {
+        const subSnap = await getDocs(collection(db2,'users',u.uid,sub));
+        for(const d of subSnap.docs) await deleteDoc(d.ref);
+      } catch(_){}
+    }
+    await deleteDoc(doc(db2,'users',u.uid));
+    admFecharEdicao();
+    showToast(`Usuário ${u.displayName||'?'} excluído!`,'red');
+    admBuscarUsuarios();
+  } catch(e){ showToast('Erro ao excluir: '+e.message,'red'); }
+};
 
 window.reiniciarTutorial = function() {
   localStorage.removeItem('mq_tutorial_done');

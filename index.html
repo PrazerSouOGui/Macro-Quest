@@ -6,6 +6,7 @@
 <title>MACRO QUEST</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="style.css"/>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
 
 <script>
@@ -523,28 +524,74 @@
 
 <!-- Modal: ADM Panel -->
 <div class="modal-bg" id="modal-adm">
-  <div class="modal-box" style="max-width:420px">
-    <h3 style="color:var(--amber-l)">[ ADM ] PAINEL ADM</h3>
-    <p style="margin-bottom:16px">Debug de XP</p>
-    <div id="adm-debug-content" style="margin-bottom:16px"></div>
-    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px">
-      <button class="btn-green" onclick="admAddXP()" style="padding:8px 14px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="5" y="1" width="2" height="10" fill="#6ee7b7"/><rect x="1" y="5" width="10" height="2" fill="#6ee7b7"/></svg> +50 XP</button>
-      <button class="btn-red" onclick="admRemXP()" style="padding:8px 14px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="1" y="5" width="10" height="2" fill="#fca5a5"/></svg> -50 XP</button>
-      <button class="btn-orange" onclick="admResetXP()" style="padding:8px 14px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="4" y="1" width="6" height="2" fill="#fcd34d"/><rect x="8" y="3" width="2" height="2" fill="#fcd34d"/><rect x="9" y="5" width="2" height="3" fill="#fcd34d"/><rect x="7" y="9" width="4" height="2" fill="#fcd34d"/><rect x="1" y="7" width="8" height="2" fill="#fcd34d"/><rect x="1" y="7" width="2" height="4" fill="#fcd34d"/><rect x="3" y="11" width="2" height="1" fill="#fcd34d"/></svg> Reset XP</button>
+  <div class="modal-box" style="max-width:520px;width:100%;padding:0;overflow:hidden;max-height:92vh;display:flex;flex-direction:column">
+    <!-- Header -->
+    <div style="background:var(--raised);border-bottom:1px solid var(--amber);padding:14px 18px;flex-shrink:0">
+      <h3 style="color:var(--amber-l);margin:0">⚡ PAINEL ADM</h3>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--line-s);border-radius:3px;padding:10px 12px;margin-bottom:10px">
-      <div style="font-family:var(--font-vt);font-size:.85rem;color:var(--amber-l);letter-spacing:.08em;margin-bottom:8px;text-align:left">[ XP CUSTOMIZADO ]</div>
-      <div style="display:flex;gap:6px;align-items:center">
-        <input type="number" id="adm-xp-custom" placeholder="Ex: 500" style="flex:1;min-width:0;font-family:var(--font-vt);font-size:1.1rem;padding:6px 8px;background:var(--raised);color:var(--amber-l);border:1px solid var(--amber);border-radius:2px">
-        <button class="btn-green" onclick="admAddCustomXP()" style="padding:8px 12px;flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="5" y="1" width="2" height="10" fill="#6ee7b7"/><rect x="1" y="5" width="10" height="2" fill="#6ee7b7"/></svg> ADD</button>
-        <button class="btn-red" onclick="admRemCustomXP()" style="padding:8px 12px;flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="1" y="5" width="10" height="2" fill="#fca5a5"/></svg> REM</button>
-      </div>
-      <div style="display:flex;gap:6px;margin-top:6px">
-        <button class="btn-blue" onclick="admSetXP()" style="padding:7px 12px;flex:1;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="2" y="4" width="10" height="2" fill="#7dd3fc"/><rect x="2" y="8" width="10" height="2" fill="#7dd3fc"/></svg> DEFINIR XP EXATO</button>
-      </div>
+    <!-- Tabs -->
+    <div style="display:flex;background:var(--raised);border-bottom:1px solid var(--line-s);flex-shrink:0">
+      <button class="social-tab active" id="adm-tab-meu" onclick="admTab('meu')" style="flex:1">Meu XP</button>
+      <button class="social-tab" id="adm-tab-usuarios" onclick="admTab('usuarios')" style="flex:1">Usuários</button>
     </div>
-    <div style="margin-top:10px">
-      <button class="btn-blue" onclick="fecharModal('modal-adm');abrirConfiguracoes()" style="width:100%;justify-content:center;margin-top:8px">← Voltar</button>
+    <!-- Body -->
+    <div style="overflow-y:auto;flex:1;padding:16px 18px">
+
+      <!-- PAINEL MEU XP -->
+      <div id="adm-panel-meu">
+        <div id="adm-debug-content" style="margin-bottom:16px"></div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px">
+          <button class="btn-green" onclick="admAddXP()" style="padding:8px 14px">+50 XP</button>
+          <button class="btn-red" onclick="admRemXP()" style="padding:8px 14px">-50 XP</button>
+          <button class="btn-orange" onclick="admResetXP()" style="padding:8px 14px">Reset XP</button>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line-s);border-radius:3px;padding:10px 12px">
+          <div style="font-family:var(--font-vt);font-size:.85rem;color:var(--amber-l);margin-bottom:8px">[ XP CUSTOMIZADO ]</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="number" id="adm-xp-custom" placeholder="Ex: 500" style="flex:1;min-width:0;font-family:var(--font-vt);font-size:1.1rem;padding:6px 8px;background:var(--raised);color:var(--amber-l);border:1px solid var(--amber);border-radius:2px">
+            <button class="btn-green" onclick="admAddCustomXP()" style="padding:8px 12px">ADD</button>
+            <button class="btn-red" onclick="admRemCustomXP()" style="padding:8px 12px">REM</button>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn-blue" onclick="admSetXP()" style="padding:7px 12px;flex:1;justify-content:center">DEFINIR XP EXATO</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINEL USUÁRIOS -->
+      <div id="adm-panel-usuarios" style="display:none">
+        <!-- Busca -->
+        <div style="display:flex;gap:6px;margin-bottom:12px">
+          <input type="text" id="adm-search-input" placeholder="Buscar por nome ou e-mail..." style="flex:1;font-family:var(--font-vt);font-size:1rem;padding:8px 10px">
+          <button class="btn-green" onclick="admBuscarUsuarios()" style="padding:8px 12px;flex-shrink:0">🔍</button>
+        </div>
+        <div id="adm-search-results" style="display:flex;flex-direction:column;gap:8px"></div>
+
+        <!-- Painel edição de usuário selecionado -->
+        <div id="adm-user-edit" style="display:none;margin-top:14px;padding:14px;background:var(--raised);border:1px solid var(--amber);border-radius:3px">
+          <div style="font-family:var(--font-vt);font-size:.88rem;color:var(--amber-l);margin-bottom:10px">◈ EDITANDO: <span id="adm-edit-nome" style="color:var(--ink)"></span></div>
+          <div id="adm-edit-info" style="font-family:var(--font-vt);font-size:.85rem;color:var(--ink-m);margin-bottom:12px;line-height:1.8"></div>
+          <!-- XP -->
+          <div style="font-family:var(--font-vt);font-size:.8rem;color:var(--ink-f);margin-bottom:6px">XP DO USUÁRIO:</div>
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+            <input type="number" id="adm-edit-xp-val" placeholder="Novo XP" style="flex:1;min-width:80px;font-family:var(--font-vt);font-size:1rem;padding:6px 8px;background:var(--surface);color:var(--amber-l);border:1px solid var(--amber);border-radius:2px">
+            <button class="btn-green" onclick="admEditarXPUsuario('add')" style="padding:7px 10px;font-size:.75rem">+ADD</button>
+            <button class="btn-red" onclick="admEditarXPUsuario('rem')" style="padding:7px 10px;font-size:.75rem">-REM</button>
+            <button class="btn-blue" onclick="admEditarXPUsuario('set')" style="padding:7px 10px;font-size:.75rem">DEFINIR</button>
+          </div>
+          <!-- Ações -->
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-orange" onclick="admToggleBloqueio()" id="adm-btn-bloquear" style="flex:1;justify-content:center;padding:8px 10px;font-size:.75rem">🔒 Bloquear</button>
+            <button class="btn-red" onclick="admExcluirUsuario()" style="flex:1;justify-content:center;padding:8px 10px;font-size:.75rem">🗑 Excluir</button>
+          </div>
+          <button onclick="admFecharEdicao()" style="width:100%;margin-top:8px;padding:7px;background:none;border:1px solid var(--line-s);color:var(--ink-f);font-family:var(--font-vt);cursor:pointer;border-radius:2px">✕ Fechar</button>
+        </div>
+      </div>
+
+    </div>
+    <!-- Footer -->
+    <div style="padding:10px 18px;border-top:1px solid var(--line-s);background:var(--raised);flex-shrink:0">
+      <button class="btn-blue" onclick="fecharModal('modal-adm');abrirConfiguracoes()" style="width:100%;justify-content:center;padding:9px">← Voltar</button>
     </div>
   </div>
 </div>
@@ -631,7 +678,14 @@
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn-green" onclick="socialLogin()" style="flex:1;justify-content:center;padding:9px">▶ Entrar</button>
-            <button class="btn-blue" onclick="socialRegister()" style="flex:1;justify-content:center;padding:9px">✦ Criar Conta</button>
+            <button class="btn-blue" onclick="mostrarCaptchaRegistro()" style="flex:1;justify-content:center;padding:9px">✦ Criar Conta</button>
+          </div>
+          <!-- reCAPTCHA v2 — aparece só ao criar conta -->
+          <div id="recaptcha-area" style="display:none;margin-top:12px;padding:10px;background:rgba(41,128,185,.07);border:1px solid rgba(41,128,185,.25);border-radius:2px">
+            <div style="font-family:var(--font-vt);font-size:.88rem;color:var(--ink-m);margin-bottom:8px">✦ Confirme que você não é um robô:</div>
+            <div class="g-recaptcha" data-sitekey="6LeCcoksAAAAAC2wMpHGTEhBgIENx02JJFMVeGp5" data-theme="dark"></div>
+            <button class="btn-blue" onclick="socialRegister()" style="width:100%;justify-content:center;padding:9px;margin-top:10px">✦ Confirmar e Criar Conta</button>
+            <button onclick="ocultarCaptchaRegistro()" style="width:100%;margin-top:6px;padding:7px;background:none;border:1px solid var(--line-s);color:var(--ink-f);font-family:var(--font-vt);cursor:pointer;border-radius:2px">Cancelar</button>
           </div>
           <div style="text-align:right;margin-top:6px">
             <button onclick="mostrarRecuperarSenha()" style="background:none;border:none;color:var(--ink-f);font-family:var(--font-vt);font-size:.88rem;cursor:pointer;padding:2px 0;text-decoration:underline;text-decoration-color:var(--line-s)">Esqueci minha senha</button>
@@ -757,7 +811,6 @@
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, onSnapshot, serverTimestamp, orderBy, limit, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -777,16 +830,6 @@
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-
-  // ── App Check (reCAPTCHA v3) ─────────────────────────
-  // Só ativa em produção — reCAPTCHA não funciona em file://
-  const _isLocalFile = location.protocol === 'file:';
-  if (!_isLocalFile) {
-    initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider('6LeCcoksAAAAAC2wMpHGTEhBgIENx02JJFMVeGp5'),
-      isTokenAutoRefreshEnabled: true
-    });
-  }
 
   const auth = getAuth(app);
   const db = getFirestore(app);
@@ -881,6 +924,16 @@
   onAuthStateChanged(auth, async (user) => {
     socialUser = user;
     if(user) {
+      // Verificar bloqueio
+      const { getFirestore, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js').catch(()=>({getFirestore:()=>({}),doc:()=>{},getDoc:()=>({})}));
+      try {
+        const snap = await getDoc(doc(getFirestore(),'users',user.uid));
+        if(snap.exists() && snap.data().bloqueado) {
+          await signOut(auth);
+          if(typeof showToast==='function') showToast('Conta bloqueada. Contate o administrador.','red',4000);
+          return;
+        }
+      } catch(_) {}
       // Verificar se é o admin
       window._isAdmin = (user.email === ADMIN_EMAIL);
       // Mostrar/ocultar botão ADM no Config
@@ -1036,20 +1089,39 @@
     }
   };
 
+  window.mostrarCaptchaRegistro = function() {
+    document.getElementById('recaptcha-area').style.display = '';
+  };
+  window.ocultarCaptchaRegistro = function() {
+    document.getElementById('recaptcha-area').style.display = 'none';
+    if(window.grecaptcha) grecaptcha.reset();
+  };
+
   window.socialRegister = async function() {
     const email = document.getElementById('social-email').value.trim();
     const pass = document.getElementById('social-password').value;
     const errEl = document.getElementById('social-auth-error');
     const loadEl = document.getElementById('social-loading');
     errEl.style.display='none';
+
+    // Validar reCAPTCHA v2
+    const captchaToken = window.grecaptcha ? grecaptcha.getResponse() : '';
+    if (!captchaToken) {
+      errEl.textContent = 'Por favor, confirme o reCAPTCHA antes de criar a conta.';
+      errEl.style.display='';
+      return;
+    }
+
     loadEl.style.display='';
     const xp = typeof xpData!=='undefined'?xpData:{};
     const nome = xp.playerName || 'Jogador';
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, pass);
       await updateProfile(cred.user, {displayName: nome});
+      ocultarCaptchaRegistro();
     } catch(e) {
       loadEl.style.display='none';
+      if(window.grecaptcha) grecaptcha.reset();
       errEl.textContent = traduzirErroAuth(e.code);
       errEl.style.display='';
     }
