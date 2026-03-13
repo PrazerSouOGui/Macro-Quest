@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MACRO QUEST</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="style.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+
+<script>
+  // Fix mobile viewport height (accounts for browser chrome)
+  function setVH(){document.documentElement.style.setProperty('--vh',(window.innerHeight*0.01)+'px');}
+  setVH(); window.addEventListener('resize',setVH);
+</script>
+</head>
+<body>
+<div id="site-header">
+  <div class="header-eyebrow">▸ Daily Fitness Tracker ◂</div>
+  <h1>// MACRO QUEST //</h1>
+  <div class="header-sub">Calculadora de Macros &amp; Hidratação</div>
+  <div class="header-ornament">
+    <span>▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰</span>
+  </div>
+</div>
+<div class="xp-profile-card" id="xp-player-card">
+  <div class="xp-avatar-area">
+    <div class="xp-avatar-frame" onclick="abrirAvatarShop()" title="Clique para trocar avatar">
+      <canvas id="avatar-canvas" width="72" height="72"></canvas>
+      <div class="xp-avatar-edit-hint">TROCAR</div>
+    </div>
+    <div class="xp-info">
+      <div class="xp-player-name" id="xp-player-name-display">SEU NOME</div>
+      <div class="xp-title" id="xp-title-display">Novato em Macro</div>
+      <div class="xp-level-badge">
+        <canvas id="xp-level-icon-canvas" width="20" height="20" style="image-rendering:pixelated;vertical-align:middle"></canvas>
+        <span id="xp-level-display">LVL 1</span>
+      </div>
+      <div class="xp-bar-wrap">
+        <div class="xp-bar" id="xp-bar" style="width:0%"></div>
+      </div>
+      <div class="xp-bar-label" id="xp-bar-label">0 / 15 XP</div>
+    </div>
+  </div>
+  <div class="xp-name-row">
+    <input type="text" id="xp-name-input" placeholder="Seu nome..." maxlength="20" oninput="salvarXPPerfil()">
+    <button class="btn-orange" onclick="abrirAvatarShop()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="2" y="6" width="12" height="9" fill="#4a2c0a"/><rect x="1" y="7" width="14" height="1" fill="#6b3d12"/><rect x="2" y="6" width="12" height="1" fill="#7b4e1a"/><rect x="4" y="2" width="3" height="5" fill="none" stroke="#ffd54f" stroke-width="1"/><rect x="9" y="2" width="3" height="5" fill="none" stroke="#ffd54f" stroke-width="1"/><rect x="5" y="9" width="2" height="3" fill="#f39c12"/><rect x="9" y="9" width="2" height="3" fill="#f39c12"/><rect x="7" y="8" width="2" height="2" fill="#ffd54f"/><rect x="3" y="11" width="2" height="1" fill="#e67e22"/><rect x="11" y="11" width="2" height="1" fill="#e67e22"/></svg> Loja</button>
+    <button class="btn-blue" onclick="abrirModalLevels()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="1" y="12" width="3" height="3" fill="#3498db"/><rect x="5" y="9" width="3" height="6" fill="#2980b9"/><rect x="9" y="6" width="3" height="9" fill="#1abc9c"/><rect x="13" y="3" width="3" height="12" fill="#f39c12"/><rect x="1" y="11" width="3" height="1" fill="#7dd3fc"/><rect x="5" y="8" width="3" height="1" fill="#7dd3fc"/><rect x="9" y="5" width="3" height="1" fill="#6ee7b7"/><rect x="13" y="2" width="3" height="1" fill="#fcd34d"/></svg> Níveis</button>
+    <button class="btn-blue" onclick="abrirConfiguracoes()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="6" y="0" width="4" height="2" fill="#7dd3fc"/><rect x="6" y="14" width="4" height="2" fill="#7dd3fc"/><rect x="0" y="6" width="2" height="4" fill="#7dd3fc"/><rect x="14" y="6" width="2" height="4" fill="#7dd3fc"/><rect x="2" y="2" width="2" height="2" fill="#7dd3fc"/><rect x="12" y="2" width="2" height="2" fill="#7dd3fc"/><rect x="2" y="12" width="2" height="2" fill="#7dd3fc"/><rect x="12" y="12" width="2" height="2" fill="#7dd3fc"/><rect x="4" y="4" width="8" height="8" fill="#2980b9"/><rect x="6" y="6" width="4" height="4" fill="#0c0c0c"/><rect x="7" y="7" width="2" height="2" fill="#7dd3fc"/></svg> Config</button>
+  </div>
+  <div class="xp-debug-row" id="xp-debug-row-main" style="display:none">
+    <input type="number" id="xp-debug-input" placeholder="+/- XP (debug)" style="flex:1;min-width:0;font-family:var(--font-pixel);font-size:.32rem;padding:5px 8px">
+    <button class="btn-red" onclick="aplicarXPDebug()" style="font-size:.7rem;padding:5px 9px;white-space:nowrap;flex-shrink:0">▶ XP</button>
+  </div>
+</div>
+<section id="sec-imc">
+  <h2><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiBmaWxsPSJub25lIj4KICA8IS0tIGhhbHRlcmUgcmV0cm8gcGl4ZWwgLS0+CiAgPHJlY3QgeD0iMSIgeT0iNiIgd2lkdGg9IjMiIGhlaWdodD0iNCIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjMiIHk9IjUiIHdpZHRoPSIyIiBoZWlnaHQ9IjYiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSIxMiIgeT0iNiIgd2lkdGg9IjMiIGhlaWdodD0iNCIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjExIiB5PSI1IiB3aWR0aD0iMiIgaGVpZ2h0PSI2IiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iNSIgeT0iNyIgd2lkdGg9IjYiIGhlaWdodD0iMiIgZmlsbD0iI2YzOWMxMiIvPgogIDwhLS0gcGxhcXVpbmhhcyAtLT4KICA8cmVjdCB4PSIwIiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjYzAzOTJiIi8+CiAgPHJlY3QgeD0iMTQiIHk9IjciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNjMDM5MmIiLz4KPC9zdmc+" style="vertical-align:middle;width:20px;height:20px" aria-hidden="true"> Perfil &amp; Status</h2>
+  <div class="imc-grid">
+    <div class="imc-field"><label>Peso atual (kg)</label><input type="number" id="input-peso" placeholder="80" oninput="salvarPerfil()"></div>
+    <div class="imc-field"><label>Meta de peso (kg)</label><input type="number" id="input-meta-peso" placeholder="75" oninput="salvarPerfil()"></div>
+    <div class="imc-field"><label>Altura (cm)</label><input type="number" id="input-altura" placeholder="175" oninput="salvarPerfil()"></div>
+    <div class="imc-field"><label>Idade</label><input type="number" id="input-idade" placeholder="25" oninput="salvarPerfil()"></div>
+    <div class="imc-field"><label>Sexo</label>
+      <select id="input-sexo" onchange="salvarPerfil()">
+        <option value="m">Masculino</option>
+        <option value="f">Feminino</option>
+      </select>
+    </div>
+    <div class="imc-field"><label>Nível de atividade</label>
+      <select id="input-atividade" onchange="salvarPerfil()">
+        <option value="1.2">Sedentário</option>
+        <option value="1.375">Levemente ativo (1–3x/sem)</option>
+        <option value="1.55" selected>Moderado (3–5x/sem)</option>
+        <option value="1.725">Muito ativo (6–7x/sem)</option>
+        <option value="1.9">Extremamente ativo (2x/dia)</option>
+      </select>
+    </div>
+  </div>
+  <h3>» Objetivo de Treino</h3>
+  <div class="obj-grid" id="obj-grid">
+    <div class="obj-card" data-obj="musculacao"     onclick="selObj(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIxIiB5PSI2IiB3aWR0aD0iMyIgaGVpZ2h0PSI0IiBmaWxsPSIjZTc0YzNjIi8+PHJlY3QgeD0iMyIgeT0iNSIgd2lkdGg9IjIiIGhlaWdodD0iNiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjEyIiB5PSI2IiB3aWR0aD0iMyIgaGVpZ2h0PSI0IiBmaWxsPSIjZTc0YzNjIi8+PHJlY3QgeD0iMTEiIHk9IjUiIHdpZHRoPSIyIiBoZWlnaHQ9IjYiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI1IiB5PSI3IiB3aWR0aD0iNiIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iMCIgeT0iNyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2MwMzkyYiIvPjxyZWN0IHg9IjE0IiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjYzAzOTJiIi8+CiAgPCEtLSBicmHDp28vbcO6c2N1bG8gLS0+CiAgPHJlY3QgeD0iNiIgeT0iNCIgd2lkdGg9IjQiIGhlaWdodD0iMiIgZmlsbD0iI2ZjYTVhNSIvPgo8L3N2Zz4=" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Musculação</div>
+    <div class="obj-card" data-obj="fisiculturismo" onclick="selObj(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIHRyb2bDqXUgLS0+CiAgPHJlY3QgeD0iNSIgeT0iMSIgd2lkdGg9IjYiIGhlaWdodD0iNiIgZmlsbD0iI2YzOWMxMiIvPjxyZWN0IHg9IjMiIHk9IjIiIHdpZHRoPSIzIiBoZWlnaHQ9IjQiIGZpbGw9IiNlNjdlMjIiLz4KICA8cmVjdCB4PSIxMCIgeT0iMiIgd2lkdGg9IjMiIGhlaWdodD0iNCIgZmlsbD0iI2U2N2UyMiIvPgogIDxyZWN0IHg9IjYiIHk9IjciIHdpZHRoPSI0IiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz48cmVjdCB4PSI1IiB5PSI5IiB3aWR0aD0iNiIgaGVpZ2h0PSIyIiBmaWxsPSIjZTY3ZTIyIi8+CiAgPHJlY3QgeD0iNCIgeT0iMTEiIHdpZHRoPSI4IiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSI3IiB5PSIzIiB3aWR0aD0iMiIgaGVpZ2h0PSIzIiBmaWxsPSIjZmZmOSIvPgogIDwhLS0gZXN0cmVsYSBubyB0b3BvIC0tPgogIDxyZWN0IHg9IjciIHk9IjAiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmZmQ1NGYiLz4KPC9zdmc+" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Fisiculturismo</div>
+    <div class="obj-card" data-obj="emagrecimento"  onclick="selObj(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGNoYW1hIGRlIGZvZ28gcGl4ZWwgLS0+CiAgPHJlY3QgeD0iNyIgeT0iMCIgd2lkdGg9IjIiIGhlaWdodD0iMyIgZmlsbD0iI2ZmZDU0ZiIvPgogIDxyZWN0IHg9IjUiIHk9IjIiIHdpZHRoPSI2IiBoZWlnaHQ9IjMiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOCIgaGVpZ2h0PSI0IiBmaWxsPSIjZTY3ZTIyIi8+CiAgPHJlY3QgeD0iMyIgeT0iNyIgd2lkdGg9IjEwIiBoZWlnaHQ9IjQiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI0IiB5PSIxMSIgd2lkdGg9IjgiIGhlaWdodD0iMyIgZmlsbD0iI2MwMzkyYiIvPgogIDxyZWN0IHg9IjYiIHk9IjEzIiB3aWR0aD0iNCIgaGVpZ2h0PSIyIiBmaWxsPSIjOTIyYjIxIi8+CiAgPCEtLSBjZW50cm8gY2xhcm8gLS0+CiAgPHJlY3QgeD0iNiIgeT0iNiIgd2lkdGg9IjQiIGhlaWdodD0iMyIgZmlsbD0iI2ZmZDU0ZiIvPgo8L3N2Zz4=" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Emagrecimento</div>
+    <div class="obj-card" data-obj="corrida"        onclick="selObj(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGJvbmVjbyBjb3JyZW5kbyAtLT4KICA8cmVjdCB4PSI4IiB5PSIxIiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiBmaWxsPSIjZWNlOWU0Ii8+PCEtLSBjYWJlw6dhIC0tPgogIDxyZWN0IHg9IjciIHk9IjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNlNzRjM2MiLz48IS0tIGNvcnBvIC0tPgogIDxyZWN0IHg9IjUiIHk9IjUiIHdpZHRoPSIyIiBoZWlnaHQ9IjMiIGZpbGw9IiNlY2U5ZTQiLz48IS0tIGJyYcOnbyBmcmVudGUgLS0+CiAgPHJlY3QgeD0iMTEiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjMiIGZpbGw9IiNlY2U5ZTQiLz48IS0tIGJyYcOnbyB0csOhcyAtLT4KICA8cmVjdCB4PSI2IiB5PSI4IiB3aWR0aD0iMiIgaGVpZ2h0PSIzIiBmaWxsPSIjZTc0YzNjIi8+PCEtLSBwZXJuYSB0csOhcyAtLT4KICA8cmVjdCB4PSI5IiB5PSI4IiB3aWR0aD0iMiIgaGVpZ2h0PSIzIiBmaWxsPSIjZTc0YzNjIi8+PCEtLSBwZXJuYSBmcmVudGUgLS0+CiAgPHJlY3QgeD0iNCIgeT0iMTEiIHdpZHRoPSIzIiBoZWlnaHQ9IjIiIGZpbGw9IiNlY2U5ZTQiLz4KICA8cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSIzIiBoZWlnaHQ9IjIiIGZpbGw9IiNlY2U5ZTQiLz4KPC9zdmc+" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Corrida</div>
+    <div class="obj-card" data-obj="saude"          onclick="selObj(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGNydXogZGEgc2HDumRlIHZlcmRlIC0tPgogIDxyZWN0IHg9IjYiIHk9IjIiIHdpZHRoPSI0IiBoZWlnaHQ9IjEyIiBmaWxsPSIjMmVjYzcxIi8+CiAgPHJlY3QgeD0iMiIgeT0iNiIgd2lkdGg9IjEyIiBoZWlnaHQ9IjQiIGZpbGw9IiMyZWNjNzEiLz4KICA8cmVjdCB4PSI3IiB5PSIzIiB3aWR0aD0iMiIgaGVpZ2h0PSIxMCIgZmlsbD0iIzZlZTdiNyIvPgogIDxyZWN0IHg9IjMiIHk9IjciIHdpZHRoPSIxMCIgaGVpZ2h0PSIyIiBmaWxsPSIjNmVlN2I3Ii8+Cjwvc3ZnPg==" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Saúde Geral</div>
+    <div class="obj-card" data-obj="pouco_ativo"    onclick="selObj(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIHNvZsOhIHBpeGVsIC0tPgogIDxyZWN0IHg9IjEiIHk9IjgiIHdpZHRoPSIxNCIgaGVpZ2h0PSI2IiBmaWxsPSIjNTU1Ii8+PHJlY3QgeD0iMSIgeT0iOCIgd2lkdGg9IjE0IiBoZWlnaHQ9IjEiIGZpbGw9IiM3NzciLz4KICA8cmVjdCB4PSIxIiB5PSI2IiB3aWR0aD0iMyIgaGVpZ2h0PSI0IiBmaWxsPSIjNjY2Ii8+PHJlY3QgeD0iMTIiIHk9IjYiIHdpZHRoPSIzIiBoZWlnaHQ9IjQiIGZpbGw9IiM2NjYiLz4KICA8cmVjdCB4PSIzIiB5PSI3IiB3aWR0aD0iMTAiIGhlaWdodD0iMyIgZmlsbD0iIzg4OCIvPgogIDwhLS0gYm9uZWNvIGRlaXRhZG8gLS0+CiAgPHJlY3QgeD0iNCIgeT0iNSIgd2lkdGg9IjMiIGhlaWdodD0iMyIgZmlsbD0iI2VjZTllNCIvPjxyZWN0IHg9IjciIHk9IjYiIHdpZHRoPSI1IiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8IS0tIHp6enogLS0+CiAgPHJlY3QgeD0iMTEiIHk9IjIiIHdpZHRoPSIzIiBoZWlnaHQ9IjEiIGZpbGw9IiNmMzljMTIiLz48cmVjdCB4PSIxMiIgeT0iMyIgd2lkdGg9IjIiIGhlaWdodD0iMSIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjExIiB5PSI0IiB3aWR0aD0iMyIgaGVpZ2h0PSIxIiBmaWxsPSIjZjM5YzEyIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Vida Sedentária</div>
+    <div class="obj-card" data-obj="lutas"          onclick="selObj(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGx1dmEgZGUgYm94ZSBwaXhlbCAtLT4KICA8cmVjdCB4PSIyIiB5PSI0IiB3aWR0aD0iNiIgaGVpZ2h0PSI4IiBmaWxsPSIjZTc0YzNjIi8+PHJlY3QgeD0iMiIgeT0iNCIgd2lkdGg9IjYiIGhlaWdodD0iMSIgZmlsbD0iI2MwMzkyYiIvPgogIDxyZWN0IHg9IjEiIHk9IjUiIHdpZHRoPSIyIiBoZWlnaHQ9IjUiIGZpbGw9IiNjMDM5MmIiLz48cmVjdCB4PSI4IiB5PSI1IiB3aWR0aD0iMiIgaGVpZ2h0PSI1IiBmaWxsPSIjYzAzOTJiIi8+CiAgPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjUiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDwhLS0gc2VndW5kYSBsdXZhIC0tPgogIDxyZWN0IHg9IjgiIHk9IjYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiIGZpbGw9IiNjMDM5MmIiLz4KICA8cmVjdCB4PSIxNCIgeT0iNyIgd2lkdGg9IjIiIGhlaWdodD0iNCIgZmlsbD0iI2E5MzIyNiIvPgogIDxyZWN0IHg9IjkiIHk9IjUiIHdpZHRoPSI0IiBoZWlnaHQ9IjIiIGZpbGw9IiNjMDM5MmIiLz4KICA8IS0tIGltcGFjdG8gLS0+CiAgPHJlY3QgeD0iNiIgeT0iNyIgd2lkdGg9IjQiIGhlaWdodD0iMiIgZmlsbD0iI2ZmZDU0ZiIvPgo8L3N2Zz4=" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Lutas / Artes Marciais</div>
+  </div>
+  <div id="obj-desc" style="display:none;background:rgba(100,50,10,.12);border:1px solid rgba(230,126,34,.2);border-left:2px solid var(--amber);border-radius:2px;padding:10px 14px;margin-top:10px;font-size:.88rem;color:var(--ink-m);line-height:1.7"></div>
+  <div id="submenu-lutas" style="display:none">
+    <h3>» Modalidade</h3>
+    <div class="obj-grid" id="luta-grid">
+      <div class="obj-card luta-card" data-luta="muay_thai" onclick="selLuta(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGJyYcOnbyBzdXBlcmlvciAtLT4KICA8cmVjdCB4PSI2IiB5PSIxIiB3aWR0aD0iNCIgaGVpZ2h0PSI1IiBmaWxsPSIjZWNlOWU0Ii8+CiAgPCEtLSBjb3RvdmVsbyBlbSBkZXN0YXF1ZSAtLT4KICA8cmVjdCB4PSI1IiB5PSI1IiB3aWR0aD0iNiIgaGVpZ2h0PSIzIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iNCIgeT0iNiIgd2lkdGg9IjgiIGhlaWdodD0iMiIgZmlsbD0iI2ZmZDU0ZiIvPgogIDwhLS0gcG9udGEgZG8gY290b3ZlbG8gLS0+CiAgPHJlY3QgeD0iMiIgeT0iNyIgd2lkdGg9IjMiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjEiIHk9IjgiIHdpZHRoPSIyIiBoZWlnaHQ9IjEiIGZpbGw9IiNjMDM5MmIiLz4KICA8IS0tIGJyYcOnbyBpbmZlcmlvciAtLT4KICA8cmVjdCB4PSI1IiB5PSI4IiB3aWR0aD0iNCIgaGVpZ2h0PSI1IiBmaWxsPSIjZWNlOWU0Ii8+CiAgPCEtLSBsaW5oYXMgZGUgaW1wYWN0byAtLT4KICA8cmVjdCB4PSIwIiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIxIiBmaWxsPSIjZmZkNTRmIi8+CiAgPHJlY3QgeD0iMCIgeT0iOSIgd2lkdGg9IjIiIGhlaWdodD0iMSIgZmlsbD0iI2ZmZDU0ZiIvPgo8L3N2Zz4=" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Muay Thai</div>
+      <div class="obj-card luta-card" data-luta="bjj"       onclick="selLuta(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGtpbW9ubyAvIGZhaXhhIC0tPgogIDxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iIzM0OThkYiIvPgogIDxyZWN0IHg9IjUiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMjk4MGI5Ii8+CiAgPHJlY3QgeD0iOSIgeT0iMyIgd2lkdGg9IjIiIGhlaWdodD0iMTAiIGZpbGw9IiMyOTgwYjkiLz4KICA8cmVjdCB4PSIzIiB5PSI3IiB3aWR0aD0iMTAiIGhlaWdodD0iMiIgZmlsbD0iI2ZmZiIvPjwhLS0gZmFpeGEgLS0+CiAgPCEtLSBjYWJlw6dhIC0tPgogIDxyZWN0IHg9IjYiIHk9IjEiIHdpZHRoPSI0IiBoZWlnaHQ9IjMiIGZpbGw9IiNlY2U5ZTQiLz4KPC9zdmc+" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">BJJ</div>
+      <div class="obj-card luta-card" data-luta="judo"      onclick="selLuta(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIHRocm93IHNpbGhvdWV0dGUgLS0+CiAgPHJlY3QgeD0iOSIgeT0iMSIgd2lkdGg9IjMiIGhlaWdodD0iMyIgZmlsbD0iI2VjZTllNCIvPgogIDxyZWN0IHg9IjciIHk9IjMiIHdpZHRoPSI1IiBoZWlnaHQ9IjQiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSIzIiB5PSI1IiB3aWR0aD0iNSIgaGVpZ2h0PSIzIiBmaWxsPSIjZWNlOWU0Ii8+PCEtLSBqb2dhciAtLT4KICA8cmVjdCB4PSI1IiB5PSI4IiB3aWR0aD0iNCIgaGVpZ2h0PSI1IiBmaWxsPSIjZjM5YzEyIi8+CiAgPCEtLSBpbXBhY3RvIG5vIGNow6NvIC0tPgogIDxyZWN0IHg9IjIiIHk9IjEzIiB3aWR0aD0iMTIiIGhlaWdodD0iMiIgZmlsbD0iIzU1NSIvPgogIDxyZWN0IHg9IjEiIHk9IjEyIiB3aWR0aD0iMyIgaGVpZ2h0PSIxIiBmaWxsPSIjZmZkNTRmIi8+CiAgPHJlY3QgeD0iMTIiIHk9IjEyIiB3aWR0aD0iMyIgaGVpZ2h0PSIxIiBmaWxsPSIjZmZkNTRmIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Judô</div>
+      <div class="obj-card luta-card" data-luta="boxing"    onclick="selLuta(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIyIiB5PSI0IiB3aWR0aD0iNyIgaGVpZ2h0PSI5IiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iMiIgeT0iNCIgd2lkdGg9IjciIGhlaWdodD0iMSIgZmlsbD0iIzkyMmIyMSIvPgogIDxyZWN0IHg9IjEiIHk9IjUiIHdpZHRoPSIyIiBoZWlnaHQ9IjYiIGZpbGw9IiNjMDM5MmIiLz4KICA8cmVjdCB4PSI5IiB5PSI1IiB3aWR0aD0iMiIgaGVpZ2h0PSI2IiBmaWxsPSIjYzAzOTJiIi8+CiAgPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjYiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjQiIHk9IjIiIHdpZHRoPSI0IiBoZWlnaHQ9IjIiIGZpbGw9IiNjMDM5MmIiLz48IS0tIHB1bmhvIC0tPgogIDwhLS0gaW1wYWN0byAtLT4KICA8cmVjdCB4PSIxMCIgeT0iNiIgd2lkdGg9IjUiIGhlaWdodD0iNCIgZmlsbD0iI2ZmZDU0ZiIgZmlsbC1vcGFjaXR5PSIuNiIvPgogIDxyZWN0IHg9IjExIiB5PSI3IiB3aWR0aD0iMyIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Boxe</div>
+      <div class="obj-card luta-card" data-luta="mma"       onclick="selLuta(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIG9jdMOzZ29ubyBwaXhlbCAtLT4KICA8cmVjdCB4PSI1IiB5PSIxIiB3aWR0aD0iNiIgaGVpZ2h0PSIxNCIgZmlsbD0iIzMzMyIvPgogIDxyZWN0IHg9IjEiIHk9IjUiIHdpZHRoPSIxNCIgaGVpZ2h0PSI2IiBmaWxsPSIjMzMzIi8+CiAgPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMzMzIi8+CiAgPHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjQiIGhlaWdodD0iMTIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSIyIiB5PSI2IiB3aWR0aD0iMTIiIGhlaWdodD0iNCIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjQiIHk9IjQiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiNlNzRjM2MiLz4KICA8IS0tIFggY2VudHJhbCAtLT4KICA8cmVjdCB4PSI2IiB5PSI2IiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjYzAzOTJiIi8+CiAgPHJlY3QgeD0iNyIgeT0iNyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuMyIvPgo8L3N2Zz4=" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">MMA</div>
+      <div class="obj-card luta-card" data-luta="capoeira"  onclick="selLuta(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGhlYWQ6IGRhcmsgc2tpbiAtLT4KICA8cmVjdCB4PSI5IiB5PSIwIiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiBmaWxsPSIjNWMzMzE3Ii8+CiAgPCEtLSBoYWlyIC0tPgogIDxyZWN0IHg9IjkiIHk9IjAiIHdpZHRoPSIzIiBoZWlnaHQ9IjEiIGZpbGw9IiMxYTBhMDAiLz4KICA8IS0tIGJvZHkgKHRvcnNvKSBzaGlydCB3aGl0ZS95ZWxsb3cgLS0+CiAgPHJlY3QgeD0iNyIgeT0iMyIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iI2Y1YzUxOCIvPgogIDwhLS0ga2lja2luZyBsZWcgcmFpc2VkIHVwLWxlZnQgLS0+CiAgPHJlY3QgeD0iNCIgeT0iMiIgd2lkdGg9IjMiIGhlaWdodD0iMiIgZmlsbD0iIzVjMzMxNyIvPgogIDxyZWN0IHg9IjMiIHk9IjEiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiM1YzMzMTciLz4KICA8IS0tIGZvb3Qvc2hvZSAtLT4KICA8cmVjdCB4PSIyIiB5PSIwIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMjIyIi8+CiAgPCEtLSBzdGFuZGluZyBsZWcgLyBsb3dlciBib2R5IC0tPgogIDxyZWN0IHg9IjgiIHk9IjciIHdpZHRoPSIyIiBoZWlnaHQ9IjMiIGZpbGw9IiMzYTFlMGEiLz4KICA8cmVjdCB4PSI3IiB5PSIxMCIgd2lkdGg9IjIiIGhlaWdodD0iMyIgZmlsbD0iIzNhMWUwYSIvPgogIDwhLS0gZm9vdCBwbGFudGVkIC0tPgogIDxyZWN0IHg9IjYiIHk9IjEzIiB3aWR0aD0iMyIgaGVpZ2h0PSIxIiBmaWxsPSIjMjIyIi8+CiAgPCEtLSBhcm0gZXh0ZW5kZWQgZm9yd2FyZCAtLT4KICA8cmVjdCB4PSIxMSIgeT0iNCIgd2lkdGg9IjMiIGhlaWdodD0iMiIgZmlsbD0iIzVjMzMxNyIvPgogIDwhLS0gYXJtIGJhY2sgLS0+CiAgPHJlY3QgeD0iNCIgeT0iNSIgd2lkdGg9IjMiIGhlaWdodD0iMiIgZmlsbD0iIzVjMzMxNyIvPgogIDwhLS0gaW1wYWN0IGxpbmVzIC0tPgogIDxyZWN0IHg9IjAiIHk9IjEiIHdpZHRoPSIyIiBoZWlnaHQ9IjEiIGZpbGw9IiNmZmQ1NGYiLz4KICA8cmVjdCB4PSIxIiB5PSIzIiB3aWR0aD0iMiIgaGVpZ2h0PSIxIiBmaWxsPSIjZmZkNTRmIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Capoeira</div>
+      <div class="obj-card luta-card" data-luta="wrestling" onclick="selLuta(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGRvaXMgbHV0YWRvcmVzIGFnYXJyYWRvcyAtLT4KICA8cmVjdCB4PSIxIiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiBmaWxsPSIjZWNlOWU0Ii8+CiAgPHJlY3QgeD0iMSIgeT0iNiIgd2lkdGg9IjQiIGhlaWdodD0iNSIgZmlsbD0iIzM0OThkYiIvPgogIDxyZWN0IHg9IjMiIHk9IjkiIHdpZHRoPSIzIiBoZWlnaHQ9IjQiIGZpbGw9IiMzNDk4ZGIiLz4KICA8cmVjdCB4PSIxMCIgeT0iMyIgd2lkdGg9IjMiIGhlaWdodD0iMyIgZmlsbD0iI2VjZTllNCIvPgogIDxyZWN0IHg9IjkiIHk9IjYiIHdpZHRoPSI0IiBoZWlnaHQ9IjUiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI5IiB5PSI5IiB3aWR0aD0iMyIgaGVpZ2h0PSI0IiBmaWxsPSIjZTc0YzNjIi8+CiAgPCEtLSBicmHDp29zIHRyYXZhZG9zIC0tPgogIDxyZWN0IHg9IjUiIHk9IjciIHdpZHRoPSI2IiBoZWlnaHQ9IjIiIGZpbGw9IiM4ODgiLz4KICA8cmVjdCB4PSI0IiB5PSI2IiB3aWR0aD0iOCIgaGVpZ2h0PSIyIiBmaWxsPSIjNjY2Ii8+Cjwvc3ZnPg==" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Wrestling</div>
+      <div class="obj-card luta-card" data-luta="karate"    onclick="selLuta(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGZhaXhhIHByZXRhICsga2ltb25vIGJyYW5jbyAtLT4KICA8cmVjdCB4PSI0IiB5PSIyIiB3aWR0aD0iOCIgaGVpZ2h0PSIxMiIgZmlsbD0iI2VjZTllNCIvPgogIDxyZWN0IHg9IjYiIHk9IjIiIHdpZHRoPSIyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjZGRkIi8+CiAgPHJlY3QgeD0iOCIgeT0iMiIgd2lkdGg9IjIiIGhlaWdodD0iMTIiIGZpbGw9IiNkZGQiLz4KICA8cmVjdCB4PSI0IiB5PSI3IiB3aWR0aD0iOCIgaGVpZ2h0PSIyIiBmaWxsPSIjMTExIi8+PCEtLSBmYWl4YSBwcmV0YSAtLT4KICA8IS0tIGNhYmXDp2EgLS0+CiAgPHJlY3QgeD0iNiIgeT0iMCIgd2lkdGg9IjQiIGhlaWdodD0iMyIgZmlsbD0iI2VjZTllNCIvPgogIDwhLS0gbcOjbyBlbSBwb3Npw6fDo28gZGUgZ29scGUgLS0+CiAgPHJlY3QgeD0iMTEiIHk9IjUiIHdpZHRoPSI0IiBoZWlnaHQ9IjIiIGZpbGw9IiNlY2U5ZTQiLz4KPC9zdmc+" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Karatê / TKD</div>
+      <div class="obj-card luta-card" data-luta="sumo"      onclick="selLuta(this)"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGNvcnBvIGxhcmdvIGRvIHN1bcO0IC0tPgogIDxyZWN0IHg9IjMiIHk9IjciIHdpZHRoPSIxMCIgaGVpZ2h0PSI3IiBmaWxsPSIjZWNlOWU0Ii8+CiAgPCEtLSBjYWJlw6dhIC0tPgogIDxyZWN0IHg9IjUiIHk9IjIiIHdpZHRoPSI2IiBoZWlnaHQ9IjUiIGZpbGw9IiNlY2U5ZTQiLz4KICA8IS0tIG1hd2FzaGkgKGNpbnRvKSAtLT4KICA8cmVjdCB4PSIzIiB5PSIxMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSIzIiB5PSIxMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEiIGZpbGw9IiNmZmQ1NGYiLz4KICA8IS0tIGJyYcOnb3MgbGFyZ29zIC0tPgogIDxyZWN0IHg9IjEiIHk9IjciIHdpZHRoPSIzIiBoZWlnaHQ9IjQiIGZpbGw9IiNlY2U5ZTQiLz4KICA8cmVjdCB4PSIxMiIgeT0iNyIgd2lkdGg9IjMiIGhlaWdodD0iNCIgZmlsbD0iI2VjZTllNCIvPgogIDwhLS0gdG9wa25vdCAoY29xdWUpIC0tPgogIDxyZWN0IHg9IjciIHk9IjAiIHdpZHRoPSIyIiBoZWlnaHQ9IjMiIGZpbGw9IiMzMzMiLz4KICA8cmVjdCB4PSI2IiB5PSIxIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIiBmaWxsPSIjMzMzIi8+CiAgPCEtLSBwZXJuYXMgLS0+CiAgPHJlY3QgeD0iMyIgeT0iMTMiIHdpZHRoPSI0IiBoZWlnaHQ9IjMiIGZpbGw9IiNlY2U5ZTQiLz4KICA8cmVjdCB4PSI5IiB5PSIxMyIgd2lkdGg9IjQiIGhlaWdodD0iMyIgZmlsbD0iI2VjZTllNCIvPgogIDwhLS0gZXhwcmVzc8OjbyBzw6lyaWE6IG9saG9zIC0tPgogIDxyZWN0IHg9IjYiIHk9IjQiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMzMzMiLz4KICA8cmVjdCB4PSI5IiB5PSI0IiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjMzMzIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:18px;height:18px;margin-right:4px" aria-hidden="true">Sumô</div>
+    </div>
+    <div id="luta-desc"></div>
+  </div>
+  <div class="goal-btns" id="goal-btns">
+    <button class="goal-btn btn-red"   id="gbtn-perda"      onclick="selGoal('perda')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI3IiB5PSIxIiB3aWR0aD0iMiIgaGVpZ2h0PSIxMCIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjUiIHk9IjkiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI5IiB5PSI5IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iMyIgeT0iMTEiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSIxMSIgeT0iMTEiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI1IiB5PSIxMyIgd2lkdGg9IjYiIGhlaWdodD0iMSIgZmlsbD0iI2U3NGMzYyIvPgo8L3N2Zz4=" style="vertical-align:middle" aria-hidden="true"> Perda de Peso</button>
+    <button class="goal-btn btn-blue"  id="gbtn-manutencao" onclick="selGoal('manutencao')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI3IiB5PSIxIiB3aWR0aD0iMiIgaGVpZ2h0PSIxMiIgZmlsbD0iIzdkZDNmYyIvPgogIDxyZWN0IHg9IjMiIHk9IjEzIiB3aWR0aD0iMTAiIGhlaWdodD0iMiIgZmlsbD0iIzM0OThkYiIvPgogIDwhLS0gcHJhdG9zIC0tPgogIDxyZWN0IHg9IjEiIHk9IjUiIHdpZHRoPSI1IiBoZWlnaHQ9IjEiIGZpbGw9IiM3ZGQzZmMiLz4KICA8cmVjdCB4PSIxMCIgeT0iNSIgd2lkdGg9IjUiIGhlaWdodD0iMSIgZmlsbD0iIzdkZDNmYyIvPgogIDxyZWN0IHg9IjAiIHk9IjYiIHdpZHRoPSI3IiBoZWlnaHQ9IjIiIGZpbGw9IiMyOTgwYjkiLz4KICA8cmVjdCB4PSI5IiB5PSI2IiB3aWR0aD0iNyIgaGVpZ2h0PSIyIiBmaWxsPSIjMjk4MGI5Ii8+CiAgPCEtLSB0b3BvIC0tPgogIDxyZWN0IHg9IjQiIHk9IjEiIHdpZHRoPSI4IiBoZWlnaHQ9IjIiIGZpbGw9IiMzNDk4ZGIiLz4KICA8cmVjdCB4PSI3IiB5PSIwIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjN2RkM2ZjIi8+Cjwvc3ZnPg==" style="vertical-align:middle" aria-hidden="true"> Manutenção</button>
+    <button class="goal-btn btn-green" id="gbtn-ganho"      onclick="selGoal('ganho')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI3IiB5PSI1IiB3aWR0aD0iMiIgaGVpZ2h0PSIxMCIgZmlsbD0iIzJlY2M3MSIvPgogIDxyZWN0IHg9IjUiIHk9IjUiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiMyZWNjNzEiLz4KICA8cmVjdCB4PSI5IiB5PSI1IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMmVjYzcxIi8+CiAgPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzJlY2M3MSIvPgogIDxyZWN0IHg9IjExIiB5PSIzIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMmVjYzcxIi8+CiAgPHJlY3QgeD0iNSIgeT0iMSIgd2lkdGg9IjYiIGhlaWdodD0iMiIgZmlsbD0iIzJlY2M3MSIvPgogIDxyZWN0IHg9IjciIHk9IjAiIHdpZHRoPSIyIiBoZWlnaHQ9IjEiIGZpbGw9IiM2ZWU3YjciLz4KPC9zdmc+" style="vertical-align:middle" aria-hidden="true"> Ganho de Massa</button>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center">
+    <button class="btn-primary" onclick="calcularTudo()"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIxMiIgZmlsbD0iI2ZmZiIvPgogIDxyZWN0IHg9IjQiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjEwIiBmaWxsPSIjZmZmIi8+CiAgPHJlY3QgeD0iNiIgeT0iNCIgd2lkdGg9IjIiIGhlaWdodD0iOCIgZmlsbD0iI2ZmZiIvPgogIDxyZWN0IHg9IjgiIHk9IjUiIHdpZHRoPSIyIiBoZWlnaHQ9IjYiIGZpbGw9IiNmZmYiLz4KICA8cmVjdCB4PSIxMCIgeT0iNiIgd2lkdGg9IjIiIGhlaWdodD0iNCIgZmlsbD0iI2ZmZiIvPgogIDxyZWN0IHg9IjEyIiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZmZmIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:14px;height:14px" aria-hidden="true"> CALCULAR</button>
+    <button class="btn-red" style="opacity:.7;font-size:.82rem" onclick="abrirResetPerfil()"><img class="_i0"> Resetar</button>
+  </div>
+  <div id="resultado-imc"></div>
+</section>
+<section id="sec-agua">
+  <h2><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI3IiB5PSIxIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjNDJhNWY1Ii8+CiAgPHJlY3QgeD0iNSIgeT0iMyIgd2lkdGg9IjYiIGhlaWdodD0iMiIgZmlsbD0iIzQyYTVmNSIvPgogIDxyZWN0IHg9IjMiIHk9IjUiIHdpZHRoPSIxMCIgaGVpZ2h0PSIyIiBmaWxsPSIjNDJhNWY1Ii8+CiAgPHJlY3QgeD0iMiIgeT0iNyIgd2lkdGg9IjEyIiBoZWlnaHQ9IjQiIGZpbGw9IiM0MmE1ZjUiLz4KICA8cmVjdCB4PSIzIiB5PSIxMSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjIiIGZpbGw9IiM0MmE1ZjUiLz4KICA8cmVjdCB4PSI1IiB5PSIxMyIgd2lkdGg9IjYiIGhlaWdodD0iMSIgZmlsbD0iIzQyYTVmNSIvPgogIDwhLS0gYnJpbGhvIC0tPgogIDxyZWN0IHg9IjQiIHk9IjciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiM5MGNhZjkiLz4KPC9zdmc+" style="vertical-align:middle;width:20px;height:20px" aria-hidden="true"> Hidratação</h2>
+  <div id="agua-meta-txt" style="font-family:var(--font-vt);font-size:.9rem;letter-spacing:.06em;color:var(--ink-m);margin-bottom:6px;text-transform:uppercase">Calcule seu perfil para ver a meta.</div>
+  <div class="agua-bar-wrap">
+    <div class="agua-bar" id="agua-bar" style="width:0%">0%</div>
+  </div>
+  <div id="agua-txt" style="font-family:var(--font-vt);font-size:1.05rem;letter-spacing:.05em;margin:4px 0 8px;color:#90caf9">0 ml / — ml</div>
+  <div class="agua-btns">
+    <button onclick="addAgua(150)">+150 ml</button>
+    <button onclick="addAgua(200)">+200 ml</button>
+    <button onclick="addAgua(300)">+300 ml</button>
+    <button onclick="addAgua(500)">+500 ml</button>
+    <button onclick="addAgua(750)">+750 ml</button>
+    <button onclick="addAgua(800)">+800 ml</button>
+    <button onclick="addAgua(1000)">+1 L</button>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
+    <input type="number" id="agua-custom" placeholder="ml" style="width:110px" min="1">
+    <button onclick="addAguaCustom(1)"  class="btn-green"><img class="_i1"> Adicionar</button>
+    <button onclick="addAguaCustom(-1)" class="btn-red" style="opacity:.75">− Remover</button>
+    <button onclick="resetAgua()"       style="opacity:.5;font-size:.78rem">↺ Zerar</button>
+  </div>
+</section>
+<section id="sec-refeicoes">
+  <h2><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiBmaWxsPSJub25lIj4KICA8IS0tIHByYXRvIC0tPgogIDxyZWN0IHg9IjMiIHk9IjkiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iMiIgeT0iMTAiIHdpZHRoPSIxMiIgaGVpZ2h0PSIyIiBmaWxsPSIjYzAzOTJiIi8+CiAgPHJlY3QgeD0iMyIgeT0iMTIiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxIiBmaWxsPSIjZTc0YzNjIi8+CiAgPCEtLSBnYXJmbyAtLT4KICA8cmVjdCB4PSI0IiB5PSIyIiB3aWR0aD0iMSIgaGVpZ2h0PSI1IiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjEiIGhlaWdodD0iMyIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjQiIHk9IjUiIHdpZHRoPSIzIiBoZWlnaHQ9IjEiIGZpbGw9IiNmMzljMTIiLz4KICA8IS0tIGZhY2EgLS0+CiAgPHJlY3QgeD0iMTAiIHk9IjIiIHdpZHRoPSIxIiBoZWlnaHQ9IjciIGZpbGw9IiM3YTc2NzAiLz4KICA8cmVjdCB4PSI5IiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIzIiBmaWxsPSIjZWNlOWU0Ii8+Cjwvc3ZnPg==" style="vertical-align:middle;width:20px;height:20px" aria-hidden="true"> Controle de Refeições</h2>
+  <div class="table-wrap" style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Refeição</th>
+          <th>Meta kcal</th><th>Meta Prot</th><th>Meta Carbo</th><th>Meta Gord</th>
+          <th>Cons. kcal</th><th>Cons. Prot</th><th>Cons. Carbo</th><th>Cons. Gord</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+  <div class="action-btns">
+    <button onclick="toggleTotais()"            id="btn-totais"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIxIiB5PSI0IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iNCIgeT0iMiIgd2lkdGg9IjMiIGhlaWdodD0iMyIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjkiIHk9IjIiIHdpZHRoPSIzIiBoZWlnaHQ9IjMiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSIxMiIgeT0iNCIgd2lkdGg9IjMiIGhlaWdodD0iMyIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjEiIHk9IjciIHdpZHRoPSIxNCIgaGVpZ2h0PSIzIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iMyIgeT0iMTAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIyIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iNSIgeT0iMTIiIHdpZHRoPSI2IiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI3IiB5PSIxNCIgd2lkdGg9IjIiIGhlaWdodD0iMSIgZmlsbD0iI2U3NGMzYyIvPgogIDwhLS0gaGlnaGxpZ2h0IC0tPgogIDxyZWN0IHg9IjMiIHk9IjQiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmY2E1YTUiLz4KPC9zdmc+" style="vertical-align:middle" aria-hidden="true"> Totais</button>
+    <button onclick="toggleTabela()"            id="btn-tabela"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIxIiB5PSIyIiB3aWR0aD0iMTQiIGhlaWdodD0iMyIgZmlsbD0iI2MwMzkyYiIvPgogIDxyZWN0IHg9IjEiIHk9IjUiIHdpZHRoPSIxNCIgaGVpZ2h0PSI5IiBmaWxsPSIjMWYxZjFmIiBzdHJva2U9IiMzMDMwMzAiLz4KICA8cmVjdCB4PSIxIiB5PSI1IiB3aWR0aD0iMTQiIGhlaWdodD0iOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzAzMDMwIi8+CiAgPCEtLSBsaW5oYXMgLS0+CiAgPHJlY3QgeD0iMSIgeT0iOCIgd2lkdGg9IjE0IiBoZWlnaHQ9IjEiIGZpbGw9IiMzMDMwMzAiLz4KICA8cmVjdCB4PSIxIiB5PSIxMSIgd2lkdGg9IjE0IiBoZWlnaHQ9IjEiIGZpbGw9IiMzMDMwMzAiLz4KICA8IS0tIGNvbCBkaXZpZGVyIC0tPgogIDxyZWN0IHg9IjUiIHk9IjUiIHdpZHRoPSIxIiBoZWlnaHQ9IjkiIGZpbGw9IiMzMDMwMzAiLz4KICA8cmVjdCB4PSIxMCIgeT0iNSIgd2lkdGg9IjEiIGhlaWdodD0iOSIgZmlsbD0iIzMwMzAzMCIvPgogIDwhLS0gZGFkb3MgLS0+CiAgPHJlY3QgeD0iMiIgeT0iNiIgd2lkdGg9IjIiIGhlaWdodD0iMSIgZmlsbD0iIzdhNzY3MCIvPgogIDxyZWN0IHg9IjYiIHk9IjYiIHdpZHRoPSIzIiBoZWlnaHQ9IjEiIGZpbGw9IiM3YTc2NzAiLz4KICA8cmVjdCB4PSIyIiB5PSI5IiB3aWR0aD0iMiIgaGVpZ2h0PSIxIiBmaWxsPSIjN2E3NjcwIi8+CiAgPHJlY3QgeD0iNiIgeT0iOSIgd2lkdGg9IjMiIGhlaWdodD0iMSIgZmlsbD0iIzdhNzY3MCIvPgo8L3N2Zz4=" style="vertical-align:middle" aria-hidden="true"> Tabela</button>
+    <button id="btn-add-refeicao" data-tut="btn-adicionar"><img class="_i1"> Adicionar</button>
+    <button id="btn-visualizar-refeicoes"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIzIiB5PSIyIiB3aWR0aD0iMTAiIGhlaWdodD0iMTMiIGZpbGw9IiMxZjFmMWYiIHN0cm9rZT0iIzMwMzAzMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPHJlY3QgeD0iMyIgeT0iMiIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEyIiBmaWxsPSIjMWUxZTFlIi8+CiAgPHJlY3QgeD0iMyIgeT0iMiIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI2IiB5PSIxIiB3aWR0aD0iNCIgaGVpZ2h0PSIyIiBmaWxsPSIjYzAzOTJiIi8+CiAgPHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjYiIGhlaWdodD0iMSIgZmlsbD0iIzdhNzY3MCIvPgogIDxyZWN0IHg9IjUiIHk9IjciIHdpZHRoPSI2IiBoZWlnaHQ9IjEiIGZpbGw9IiM3YTc2NzAiLz4KICA8cmVjdCB4PSI1IiB5PSI5IiB3aWR0aD0iNCIgaGVpZ2h0PSIxIiBmaWxsPSIjN2E3NjcwIi8+Cjwvc3ZnPg==" style="vertical-align:middle" aria-hidden="true"> Registradas</button>
+    <button onclick="abrirGerenciarRefeicoes()" class="btn-orange" data-tut="btn-gerenciar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI3IiB5PSIwIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iNyIgeT0iMTQiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSIwIiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iMTQiIHk9IjciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iMTIiIHk9IjIiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSIyIiB5PSIxMiIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjEyIiB5PSIxMiIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjUiIHk9IjMiIHdpZHRoPSI2IiBoZWlnaHQ9IjEwIiBmaWxsPSIjZTY3ZTIyIi8+CiAgPHJlY3QgeD0iMyIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjYiIGZpbGw9IiNlNjdlMjIiLz4KICA8cmVjdCB4PSI2IiB5PSI2IiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMGMwYzBjIi8+Cjwvc3ZnPg==" style="vertical-align:middle" aria-hidden="true"> Gerenciar</button>
+  
+    <button onclick="distribuirMacros()" class="btn-blue" data-tut="btn-distribuir"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI5IiB5PSIxIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iNyIgeT0iMyIgd2lkdGg9IjQiIGhlaWdodD0iMiIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjYiIHk9IjUiIHdpZHRoPSI0IiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSI1IiB5PSI3IiB3aWR0aD0iNSIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iNiIgeT0iNyIgd2lkdGg9IjQiIGhlaWdodD0iMiIgZmlsbD0iI2ZmZDU0ZiIvPgogIDxyZWN0IHg9IjQiIHk9IjkiIHdpZHRoPSI1IiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSIzIiB5PSIxMSIgd2lkdGg9IjQiIGhlaWdodD0iMiIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjMiIHk9IjEzIiB3aWR0aD0iMyIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+Cjwvc3ZnPg==" style="vertical-align:middle" aria-hidden="true"> Distribuir Macros</button>
+  </div>
+  <div class="action-save-row" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
+    <button id="btn-salvar-dados" class="btn-green"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIGZpbGw9IiMxZjFmMWYiLz4KICA8cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMwMzAzMCIvPgogIDxyZWN0IHg9IjMiIHk9IjEiIHdpZHRoPSI4IiBoZWlnaHQ9IjUiIGZpbGw9IiMyOTgwYjkiLz4KICA8cmVjdCB4PSI1IiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIzIiBmaWxsPSIjMWYxZjFmIi8+CiAgPHJlY3QgeD0iMyIgeT0iOCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjYiIGZpbGw9IiMzNDk4ZGIiLz4KICA8cmVjdCB4PSI0IiB5PSI5IiB3aWR0aD0iOCIgaGVpZ2h0PSI0IiBmaWxsPSIjMTU2NWMwIi8+CiAgPHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjE0IiBoZWlnaHQ9IjEiIGZpbGw9IiM3ZGQzZmMiLz4KPC9zdmc+" style="vertical-align:middle" aria-hidden="true"> Salvar</button>
+    <button class="btn-red" id="btn-resetar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI3IiB5PSIxIiB3aWR0aD0iNiIgaGVpZ2h0PSIyIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iMTEiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSIxMiIgeT0iNSIgd2lkdGg9IjIiIGhlaWdodD0iNCIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjEwIiB5PSIxMSIgd2lkdGg9IjQiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjIiIHk9IjkiIHdpZHRoPSIxMCIgaGVpZ2h0PSIyIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iMiIgeT0iNyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDwhLS0gc2V0YSAtLT4KICA8cmVjdCB4PSIyIiB5PSIxMSIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2ZjYTVhNSIvPgogIDxyZWN0IHg9IjQiIHk9IjEzIiB3aWR0aD0iMiIgaGVpZ2h0PSIxIiBmaWxsPSIjZmNhNWE1Ii8+CiAgPHJlY3QgeD0iMCIgeT0iMTEiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmY2E1YTUiLz4KICA8cmVjdCB4PSIyIiB5PSI5IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZmNhNWE1Ii8+Cjwvc3ZnPg==" style="vertical-align:middle" aria-hidden="true"> Resetar Tabela</button>
+  </div>
+  <h2 id="titulo-totais"  style="display:none;margin-top:10px">Totais do Dia</h2>
+  <div id="totais"        style="display:none;margin-top:6px"></div>
+  <h2 id="titulo-tabela"  style="display:none;margin-top:10px">Tabela Comparativa</h2>
+  <div id="tabela-ajustada" style="display:none;margin-top:6px;overflow-x:auto"></div>
+</section>
+<div class="popup-bg" id="popup-add">
+  <div class="popup">
+    <h2><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI3IiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIxMiIgZmlsbD0iIzJlY2M3MSIvPgogIDxyZWN0IHg9IjIiIHk9IjciIHdpZHRoPSIxMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMmVjYzcxIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:18px;height:18px" aria-hidden="true"> Adicionar Alimento</h2>
+    <div id="ingredient-list" class="muted" style="margin-bottom:6px;max-height:150px;overflow-y:auto"></div>
+    <div>
+      <label class="field-label">Alimento</label>
+      <input type="text" id="input-ingredient" placeholder="Ex: arroz branco, frango, whey…" autocomplete="off">
+      <div id="search-status"></div>
+      <button class="btn-web" id="btn-buscar-web" style="margin-top:8px"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIyIiB5PSI1IiB3aWR0aD0iMTIiIGhlaWdodD0iNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzQ5OGRiIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8cmVjdCB4PSI1IiB5PSIyIiB3aWR0aD0iNiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzQ5OGRiIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8cmVjdCB4PSIxIiB5PSI1IiB3aWR0aD0iMTQiIGhlaWdodD0iMSIgZmlsbD0iIzM0OThkYiIgZmlsbC1vcGFjaXR5PSIuNCIvPgogIDxyZWN0IHg9IjEiIHk9IjEwIiB3aWR0aD0iMTQiIGhlaWdodD0iMSIgZmlsbD0iIzM0OThkYiIgZmlsbC1vcGFjaXR5PSIuNCIvPgogIDxyZWN0IHg9IjciIHk9IjEiIHdpZHRoPSIyIiBoZWlnaHQ9IjE0IiBmaWxsPSIjMzQ5OGRiIiBmaWxsLW9wYWNpdHk9Ii4zIi8+CiAgPCEtLSBib3JkYSBleHRlcmlvciBwaXhlbCAtLT4KICA8cmVjdCB4PSIzIiB5PSIyIiB3aWR0aD0iMTAiIGhlaWdodD0iMSIgZmlsbD0iIzM0OThkYiIvPgogIDxyZWN0IHg9IjMiIHk9IjEzIiB3aWR0aD0iMTAiIGhlaWdodD0iMSIgZmlsbD0iIzM0OThkYiIvPgogIDxyZWN0IHg9IjEiIHk9IjQiIHdpZHRoPSIxIiBoZWlnaHQ9IjgiIGZpbGw9IiMzNDk4ZGIiLz4KICA8cmVjdCB4PSIxNCIgeT0iNCIgd2lkdGg9IjEiIGhlaWdodD0iOCIgZmlsbD0iIzM0OThkYiIvPgogIDxyZWN0IHg9IjIiIHk9IjMiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMzNDk4ZGIiLz4KICA8cmVjdCB4PSIxMyIgeT0iMyIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0iIzM0OThkYiIvPgogIDxyZWN0IHg9IjIiIHk9IjEyIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjMzQ5OGRiIi8+CiAgPHJlY3QgeD0iMTMiIHk9IjEyIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjMzQ5OGRiIi8+Cjwvc3ZnPg==" style="vertical-align:middle" aria-hidden="true"> Buscar no Open Food Facts</button>
+      <div class="sugestoes" id="sugestoes"></div>
+    </div>
+    <div style="margin-top:6px">
+      <label class="field-label">Quantidade (g ou ml)</label>
+      <input type="number" id="input-quantity" placeholder="200" style="width:130px;max-width:100%">
+    </div>
+    <div id="preview-porcao" class="preview-porcao" style="display:none"></div>
+    <div style="margin-top:6px">
+      <button onclick="adicionarIngrediente()" class="btn-green"><img class="_i1"> Adicionar à lista</button>
+    </div>
+    <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <label class="field-label" style="margin:0">Refeição destino</label>
+      <select id="select-refeicao" style="min-width:140px;max-width:100%;width:100%"></select>
+      <button onclick="finalizarRefeicao()" class="btn-primary" style="font-size:.38rem;padding:11px 18px"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIxMiIgZmlsbD0iI2ZmZiIvPgogIDxyZWN0IHg9IjQiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjEwIiBmaWxsPSIjZmZmIi8+CiAgPHJlY3QgeD0iNiIgeT0iNCIgd2lkdGg9IjIiIGhlaWdodD0iOCIgZmlsbD0iI2ZmZiIvPgogIDxyZWN0IHg9IjgiIHk9IjUiIHdpZHRoPSIyIiBoZWlnaHQ9IjYiIGZpbGw9IiNmZmYiLz4KICA8cmVjdCB4PSIxMCIgeT0iNiIgd2lkdGg9IjIiIGhlaWdodD0iNCIgZmlsbD0iI2ZmZiIvPgogIDxyZWN0IHg9IjEyIiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZmZmIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:12px;height:12px" aria-hidden="true"> FINALIZAR</button>
+      <button onclick="fecharPopup('popup-add')" class="btn-red"><img class="_i0"> Cancelar</button>
+    </div>
+  </div>
+</div>
+<div class="popup-bg" id="popup-view">
+  <div class="popup">
+    <h2><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="18" height="18" fill="none" style="vertical-align:middle"><rect x="1" y="8" width="14" height="5" fill="#555"/><rect x="1" y="8" width="14" height="1" fill="#777"/><rect x="3" y="4" width="10" height="4" fill="#444"/><rect x="5" y="2" width="6" height="3" fill="#444"/><rect x="6" y="1" width="4" height="2" fill="#666"/><rect x="2" y="13" width="12" height="1" fill="#444"/></svg></span> Refeições Registradas</h2>
+    <div id="view-refeicoes"></div>
+    <div id="detalhe-item" class="preview-porcao" style="display:none;margin-top:12px"></div>
+    <div id="view-btns-normal" style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button onclick="exportar()"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI3IiB5PSIxIiB3aWR0aD0iMiIgaGVpZ2h0PSI4IiBmaWxsPSIjZWNlOWU0Ii8+CiAgPHJlY3QgeD0iNSIgeT0iMyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2VjZTllNCIvPgogIDxyZWN0IHg9IjkiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlY2U5ZTQiLz4KICA8cmVjdCB4PSIzIiB5PSIxIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZWNlOWU0Ii8+CiAgPHJlY3QgeD0iMTEiIHk9IjEiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlY2U5ZTQiLz4KICA8cmVjdCB4PSIyIiB5PSIxMSIgd2lkdGg9IjEyIiBoZWlnaHQ9IjIiIGZpbGw9IiM3ZGQzZmMiLz4KICA8cmVjdCB4PSIyIiB5PSIxMyIgd2lkdGg9IjEyIiBoZWlnaHQ9IjIiIGZpbGw9IiMzNDk4ZGIiLz4KPC9zdmc+" style="vertical-align:middle" aria-hidden="true"> Exportar</button>
+      <button onclick="toggleModoExcluir()" class="btn-red"><img class="_i2"> Excluir</button>
+      <button onclick="apagarTodosConsumidos()" class="btn-red" style="opacity:.8;font-size:.78rem"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIzIiB5PSIyIiB3aWR0aD0iMTAiIGhlaWdodD0iOCIgZmlsbD0iI2MwMzkyYiIvPgogIDxyZWN0IHg9IjIiIHk9IjQiIHdpZHRoPSIxMiIgaGVpZ2h0PSI2IiBmaWxsPSIjYzAzOTJiIi8+CiAgPCEtLSBvbGhvcyAtLT4KICA8cmVjdCB4PSI0IiB5PSI1IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiBmaWxsPSIjMGMwYzBjIi8+CiAgPHJlY3QgeD0iOSIgeT0iNSIgd2lkdGg9IjMiIGhlaWdodD0iMyIgZmlsbD0iIzBjMGMwYyIvPgogIDwhLS0gbmFyaXogLS0+CiAgPHJlY3QgeD0iNyIgeT0iNyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzZiMTUxNSIvPgogIDwhLS0gcXVlaXhvL2RlbnRlcyAtLT4KICA8cmVjdCB4PSI0IiB5PSIxMCIgd2lkdGg9IjgiIGhlaWdodD0iMiIgZmlsbD0iI2MwMzkyYiIvPgogIDxyZWN0IHg9IjQiIHk9IjEyIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjYzAzOTJiIi8+CiAgPHJlY3QgeD0iNyIgeT0iMTIiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNjMDM5MmIiLz4KICA8cmVjdCB4PSIxMCIgeT0iMTIiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNjMDM5MmIiLz4KPC9zdmc+" style="vertical-align:middle" aria-hidden="true"> Apagar Todos</button>
+      <button onclick="fecharPopup('popup-view')" class="btn-red"><img class="_i0"> Fechar</button>
+    </div>
+    <div id="view-btns-excluir" style="display:none;margin-top:6px;gap:8px;flex-wrap:wrap;align-items:center">
+      <span style="font-family:var(--font-pixel);font-size:.32rem;color:var(--amber-l)" id="excluir-count-label">0 selecionados</span>
+      <button class="btn-red" onclick="confirmarExcluirSelecionados()">✔ Confirmar</button>
+      <button onclick="cancelarModoExcluir()">✖ Voltar</button>
+    </div>
+    <div id="aviso-apagar" class="aviso-danger" style="display:none;margin-top:10px">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="7" y="2" width="2" height="8" fill="#fcd34d"/><rect x="3" y="10" width="10" height="2" fill="#fcd34d"/><rect x="1" y="12" width="14" height="2" fill="#fcd34d"/><rect x="3" y="10" width="2" height="2" fill="#fcd34d"/><rect x="7" y="10" width="2" height="2" fill="#0c0c0c"/></svg> Ação <b>irreversível</b> — apaga todos os alimentos do dia. Deseja continuar?
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn-red" onclick="confirmarApagarConsumidos()"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIxIiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMmVjYzcxIi8+CiAgPHJlY3QgeD0iMyIgeT0iOSIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzJlY2M3MSIvPgogIDxyZWN0IHg9IjUiIHk9IjExIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMmVjYzcxIi8+CiAgPHJlY3QgeD0iNyIgeT0iOSIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzJlY2M3MSIvPgogIDxyZWN0IHg9IjkiIHk9IjciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiMyZWNjNzEiLz4KICA8cmVjdCB4PSIxMSIgeT0iNSIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzJlY2M3MSIvPgogIDxyZWN0IHg9IjEzIiB5PSIzIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMmVjYzcxIi8+Cjwvc3ZnPg==" style="vertical-align:middle" aria-hidden="true"> Sim</button>
+        <button onclick="cancelarApagarConsumidos()"><img class="_i0"> Não</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="popup-bg" id="popup-gerenciar">
+  <div class="popup">
+    <h2><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI3IiB5PSIwIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iNyIgeT0iMTQiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSIwIiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iMTQiIHk9IjciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iMTIiIHk9IjIiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSIyIiB5PSIxMiIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjEyIiB5PSIxMiIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjUiIHk9IjMiIHdpZHRoPSI2IiBoZWlnaHQ9IjEwIiBmaWxsPSIjZTY3ZTIyIi8+CiAgPHJlY3QgeD0iMyIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjYiIGZpbGw9IiNlNjdlMjIiLz4KICA8cmVjdCB4PSI2IiB5PSI2IiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMGMwYzBjIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:18px;height:18px" aria-hidden="true"> Gerenciar Refeições</h2>
+    <p style="font-size:.88rem;color:var(--ink-m);margin-bottom:6px">Crie, renomeie, reordene (☰) ou exclua refeições.</p>
+    <div id="gerenciar-lista"></div>
+    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn-green"  onclick="adicionarNovaRefeicao()"><img class="_i1"> Nova</button>
+      <button class="btn-blue"   onclick="salvarGerenciarRefeicoes()"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIGZpbGw9IiMxZjFmMWYiLz4KICA8cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMwMzAzMCIvPgogIDxyZWN0IHg9IjMiIHk9IjEiIHdpZHRoPSI4IiBoZWlnaHQ9IjUiIGZpbGw9IiMyOTgwYjkiLz4KICA8cmVjdCB4PSI1IiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIzIiBmaWxsPSIjMWYxZjFmIi8+CiAgPHJlY3QgeD0iMyIgeT0iOCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjYiIGZpbGw9IiMzNDk4ZGIiLz4KICA8cmVjdCB4PSI0IiB5PSI5IiB3aWR0aD0iOCIgaGVpZ2h0PSI0IiBmaWxsPSIjMTU2NWMwIi8+CiAgPHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjE0IiBoZWlnaHQ9IjEiIGZpbGw9IiM3ZGQzZmMiLz4KPC9zdmc+" style="vertical-align:middle" aria-hidden="true"> Salvar</button>
+      <button class="btn-orange" onclick="editarMetasDeGerenciar()"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIxMCIgeT0iMSIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjkiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlNjdlMjIiLz4KICA8cmVjdCB4PSIzIiB5PSI5IiB3aWR0aD0iOCIgaGVpZ2h0PSIyIiBmaWxsPSIjZmNkMzRkIi8+CiAgPHJlY3QgeD0iMiIgeT0iMTEiIHdpZHRoPSI4IiBoZWlnaHQ9IjIiIGZpbGw9IiNmY2QzNGQiLz4KICA8IS0tIGNvcnBvIGxhcGlzIC0tPgogIDxyZWN0IHg9IjUiIHk9IjUiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmY2QzNGQiLz4KICA8cmVjdCB4PSI2IiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZmNkMzRkIi8+CiAgPHJlY3QgeD0iNyIgeT0iNyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2ZjZDM0ZCIvPgogIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmY2QzNGQiLz4KICA8cmVjdCB4PSI0IiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZmNkMzRkIi8+CiAgPHJlY3QgeD0iMyIgeT0iOCIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2ZjZDM0ZCIvPgogIDwhLS0gcG9udGEgLS0+CiAgPHJlY3QgeD0iMiIgeT0iMTIiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlY2U5ZTQiLz4KICA8cmVjdCB4PSIxIiB5PSIxMyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzdhNzY3MCIvPgo8L3N2Zz4=" style="vertical-align:middle" aria-hidden="true"> Editar Metas</button>
+      <button class="btn-red"    onclick="fecharPopup('popup-gerenciar')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjUiIHk9IjUiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiIGZpbGw9IiNlNzRjM2MiIGZpbGwtb3BhY2l0eT0iLjEiLz4KICA8cmVjdCB4PSI1IiB5PSI1IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iNyIgeT0iNyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjkiIHk9IjkiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSIxMSIgeT0iMTEiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSIxMyIgeT0iMTMiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSIxMSIgeT0iMSIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjkiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI1IiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iMyIgeT0iOSIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjEiIHk9IjExIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZTc0YzNjIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:12px;height:12px" aria-hidden="true"> Cancelar</button>
+    </div>
+  </div>
+</div>
+<div class="popup-bg" id="popup-distribuir">
+  <div class="popup">
+    <h2><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI5IiB5PSIxIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iNyIgeT0iMyIgd2lkdGg9IjQiIGhlaWdodD0iMiIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjYiIHk9IjUiIHdpZHRoPSI0IiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSI1IiB5PSI3IiB3aWR0aD0iNSIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+CiAgPHJlY3QgeD0iNiIgeT0iNyIgd2lkdGg9IjQiIGhlaWdodD0iMiIgZmlsbD0iI2ZmZDU0ZiIvPgogIDxyZWN0IHg9IjQiIHk9IjkiIHdpZHRoPSI1IiBoZWlnaHQ9IjIiIGZpbGw9IiNmMzljMTIiLz4KICA8cmVjdCB4PSIzIiB5PSIxMSIgd2lkdGg9IjQiIGhlaWdodD0iMiIgZmlsbD0iI2YzOWMxMiIvPgogIDxyZWN0IHg9IjMiIHk9IjEzIiB3aWR0aD0iMyIgaGVpZ2h0PSIyIiBmaWxsPSIjZjM5YzEyIi8+Cjwvc3ZnPg==" style="vertical-align:middle;width:18px;height:18px" aria-hidden="true"> Distribuir Macros</h2>
+    <p style="font-size:.88rem;color:var(--ink-m);margin-bottom:10px">Distribuição automática baseada no peso de cada refeição.</p>
+    <div id="distribuir-preview" style="overflow-x:auto;margin-top:6px"></div>
+    <div id="distribuir-aviso" class="aviso-danger" style="display:none;margin-top:12px">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="7" y="2" width="2" height="8" fill="#fcd34d"/><rect x="3" y="10" width="10" height="2" fill="#fcd34d"/><rect x="1" y="12" width="14" height="2" fill="#fcd34d"/><rect x="3" y="10" width="2" height="2" fill="#fcd34d"/><rect x="7" y="10" width="2" height="2" fill="#0c0c0c"/></svg> Já existem metas preenchidas. A <b>Distribuição Total</b> vai substituir tudo. Continuar?
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn-red" onclick="confirmarDistribuicaoTotal()"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIxIiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMmVjYzcxIi8+CiAgPHJlY3QgeD0iMyIgeT0iOSIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzJlY2M3MSIvPgogIDxyZWN0IHg9IjUiIHk9IjExIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMmVjYzcxIi8+CiAgPHJlY3QgeD0iNyIgeT0iOSIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzJlY2M3MSIvPgogIDxyZWN0IHg9IjkiIHk9IjciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiMyZWNjNzEiLz4KICA8cmVjdCB4PSIxMSIgeT0iNSIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzJlY2M3MSIvPgogIDxyZWN0IHg9IjEzIiB5PSIzIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMmVjYzcxIi8+Cjwvc3ZnPg==" style="vertical-align:middle" aria-hidden="true"> Sim</button>
+        <button onclick="cancelarAvisoDistribuicao()"><img class="_i0"> Não</button>
+      </div>
+    </div>
+    <div id="distribuir-botoes" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="clicarDistribuicaoMantendo()" class="btn-green"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSI0IiB5PSIyIiB3aWR0aD0iOCIgaGVpZ2h0PSI2IiBmaWxsPSJub25lIiBzdHJva2U9IiMyZWNjNzEiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxyZWN0IHg9IjMiIHk9IjciIHdpZHRoPSIxMCIgaGVpZ2h0PSI4IiBmaWxsPSIjMWE0YTI4Ii8+CiAgPHJlY3QgeD0iMyIgeT0iNyIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEiIGZpbGw9IiMyZWNjNzEiLz4KICA8cmVjdCB4PSI3IiB5PSIxMCIgd2lkdGg9IjIiIGhlaWdodD0iMyIgZmlsbD0iIzZlZTdiNyIvPgogIDxyZWN0IHg9IjYiIHk9IjkiIHdpZHRoPSI0IiBoZWlnaHQ9IjMiIGZpbGw9Im5vbmUiLz4KICA8cmVjdCB4PSI3IiB5PSI5IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMmVjYzcxIi8+Cjwvc3ZnPg==" style="vertical-align:middle" aria-hidden="true"> Manter Existentes</button>
+      <button onclick="clicarDistribuicaoTotal()"    class="btn-blue"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8IS0tIHNldGEgY2ltYSAtLT4KICA8cmVjdCB4PSI3IiB5PSIxIiB3aWR0aD0iMiIgaGVpZ2h0PSI2IiBmaWxsPSIjMzQ5OGRiIi8+CiAgPHJlY3QgeD0iNSIgeT0iMyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzM0OThkYiIvPgogIDxyZWN0IHg9IjkiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiMzNDk4ZGIiLz4KICA8IS0tIHNldGEgYmFpeG8gLS0+CiAgPHJlY3QgeD0iNyIgeT0iOSIgd2lkdGg9IjIiIGhlaWdodD0iNiIgZmlsbD0iIzdkZDNmYyIvPgogIDxyZWN0IHg9IjUiIHk9IjExIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjN2RkM2ZjIi8+CiAgPHJlY3QgeD0iOSIgeT0iMTEiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiM3ZGQzZmMiLz4KPC9zdmc+" style="vertical-align:middle" aria-hidden="true"> Distribuição Total</button>
+      <button onclick="fecharPopup('popup-distribuir')" class="btn-red"><img class="_i0"> Cancelar</button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-reset">
+  <div class="modal-box" style="max-width:440px">
+    <h3>↺ RESETAR TABELA</h3>
+    <p style="margin-bottom:8px">O que deseja apagar?</p>
+    <div id="reset-opcoes" class="btns" style="flex-wrap:wrap">
+      <button class="btn-red" onclick="pedirConfirmacaoReset('consumidos')"><img class="_i2"> Consumidos</button>
+      <button class="btn-red" onclick="pedirConfirmacaoReset('metas')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSJub25lIj4KICA8IS0tIGPDrXJjdWxvcyBjb25jw6pudHJpY29zIHBpeGVsIC0tPgogIDxyZWN0IHg9IjEiIHk9IjUiIHdpZHRoPSIyIiBoZWlnaHQ9IjYiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSIxMyIgeT0iNSIgd2lkdGg9IjIiIGhlaWdodD0iNiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjUiIHk9IjEiIHdpZHRoPSI2IiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI1IiB5PSIxMyIgd2lkdGg9IjYiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSIxMSIgeT0iMyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjMiIHk9IjExIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iMTEiIHk9IjExIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iNCIgeT0iNSIgd2lkdGg9IjgiIGhlaWdodD0iNiIgZmlsbD0iI2U3NGMzYyIgZmlsbC1vcGFjaXR5PSIuMyIvPgogIDwhLS0gY2VudHJvIC0tPgogIDxyZWN0IHg9IjYiIHk9IjYiIHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI3IiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjZmZmIi8+Cjwvc3ZnPg==" style="vertical-align:middle" aria-hidden="true"> Metas</button>
+      <button class="btn-red" onclick="pedirConfirmacaoReset('tudo')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIzIiB5PSIyIiB3aWR0aD0iMTAiIGhlaWdodD0iOCIgZmlsbD0iI2MwMzkyYiIvPgogIDxyZWN0IHg9IjIiIHk9IjQiIHdpZHRoPSIxMiIgaGVpZ2h0PSI2IiBmaWxsPSIjYzAzOTJiIi8+CiAgPCEtLSBvbGhvcyAtLT4KICA8cmVjdCB4PSI0IiB5PSI1IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiBmaWxsPSIjMGMwYzBjIi8+CiAgPHJlY3QgeD0iOSIgeT0iNSIgd2lkdGg9IjMiIGhlaWdodD0iMyIgZmlsbD0iIzBjMGMwYyIvPgogIDwhLS0gbmFyaXogLS0+CiAgPHJlY3QgeD0iNyIgeT0iNyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzZiMTUxNSIvPgogIDwhLS0gcXVlaXhvL2RlbnRlcyAtLT4KICA8cmVjdCB4PSI0IiB5PSIxMCIgd2lkdGg9IjgiIGhlaWdodD0iMiIgZmlsbD0iI2MwMzkyYiIvPgogIDxyZWN0IHg9IjQiIHk9IjEyIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjYzAzOTJiIi8+CiAgPHJlY3QgeD0iNyIgeT0iMTIiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNjMDM5MmIiLz4KICA8cmVjdCB4PSIxMCIgeT0iMTIiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNjMDM5MmIiLz4KPC9zdmc+" style="vertical-align:middle" aria-hidden="true"> Tudo</button>
+      <button onclick="fecharModal('modal-reset')">Cancelar</button>
+    </div>
+    <div id="reset-aviso" class="aviso-danger" style="display:none;margin-top:8px;text-align:left">
+      <span id="reset-aviso-txt"></span>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn-red"   id="reset-btn-sim" onclick="confirmarReset()"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSJub25lIj4KICA8cmVjdCB4PSIyIiB5PSIxIiB3aWR0aD0iMTIiIGhlaWdodD0iMiIgZmlsbD0iI2U3NGMzYyIvPgogIDxyZWN0IHg9IjUiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjIiIGZpbGw9IiNjMDM5MmIiLz4KICA8cmVjdCB4PSIyIiB5PSIzIiB3aWR0aD0iMTIiIGhlaWdodD0iMTEiIGZpbGw9IiM3YjFhMWEiLz4KICA8cmVjdCB4PSIzIiB5PSI0IiB3aWR0aD0iMTAiIGhlaWdodD0iOSIgZmlsbD0iIzZiMTUxNSIvPgogIDxyZWN0IHg9IjUiIHk9IjUiIHdpZHRoPSIxIiBoZWlnaHQ9IjYiIGZpbGw9IiNlNzRjM2MiLz4KICA8cmVjdCB4PSI4IiB5PSI1IiB3aWR0aD0iMSIgaGVpZ2h0PSI2IiBmaWxsPSIjZTc0YzNjIi8+CiAgPHJlY3QgeD0iMTEiIHk9IjUiIHdpZHRoPSIxIiBoZWlnaHQ9IjYiIGZpbGw9IiNlNzRjM2MiLz4KPC9zdmc+" style="vertical-align:middle;width:12px;height:12px" aria-hidden="true"> Sim</button>
+        <button class="btn-green" onclick="cancelarConfirmacaoReset()">Não</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-levelup" style="overflow:hidden">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:1"></div>
+  <div class="modal-box" style="position:relative;z-index:2">
+    <canvas id="levelup-icon-canvas" width="48" height="48" style="image-rendering:pixelated;display:block;margin:8px auto 4px"></canvas>
+    <h3 id="levelup-title">LEVEL UP!</h3>
+    <p id="levelup-msg" style="margin:10px 0 6px;font-size:1rem;color:var(--amber-l);font-family:var(--font-vt);letter-spacing:.08em"></p>
+    <p style="font-size:.85rem;color:var(--ink-m);margin-bottom:8px">Você pode gastar XP na loja de avatares ou evoluir de level agora.</p>
+    <div class="btns">
+      <button class="btn-primary" onclick="confirmarLevelUp()" style="font-size:.38rem">[ UP ] EVOLUIR DE LEVEL</button>
+      <button class="btn-orange" onclick="fecharModal('modal-levelup');setTimeout(abrirAvatarShop,150)"><canvas width="14" height="14" id="shop-btn-icon" style="image-rendering:pixelated;vertical-align:middle;margin-right:4px"></canvas> IR À LOJA</button>
+      <button onclick="fecharModal('modal-levelup')">Decidir depois</button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-leveldown">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:1"></div>
+  <div class="modal-box" style="position:relative;z-index:2;border-top-color:var(--red-l)">
+    <canvas id="leveldown-icon-canvas" width="48" height="48" style="image-rendering:pixelated;display:block;margin:8px auto 4px"></canvas>
+    <h3 id="leveldown-title" style="color:var(--red-l);text-shadow:0 0 12px rgba(231,76,60,.5)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="none" style="vertical-align:middle;margin-right:5px"><rect x="4" y="2" width="8" height="7" fill="#c0392b"/><rect x="3" y="4" width="10" height="5" fill="#c0392b"/><rect x="5" y="9" width="6" height="3" fill="#c0392b"/><rect x="5" y="12" width="2" height="2" fill="#6b1515"/><rect x="9" y="12" width="2" height="2" fill="#6b1515"/><rect x="5" y="5" width="2" height="2" fill="#0c0c0c"/><rect x="9" y="5" width="2" height="2" fill="#0c0c0c"/><rect x="7" y="7" width="2" height="1" fill="#c0392b"/></svg> LEVEL DOWN!</h3>
+    <p id="leveldown-msg" style="margin:10px 0 6px;font-size:1rem;color:#fca5a5;font-family:var(--font-vt);letter-spacing:.08em"></p>
+    <p style="font-size:.82rem;color:var(--ink-m);margin-bottom:8px">Seu XP caiu abaixo do limiar. Continue treinando para recuperar o nível!</p>
+    <div class="btns">
+      <button class="btn-red" onclick="fecharModal('modal-leveldown')" style="font-size:.38rem"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="7" y="1" width="2" height="10" fill="#e0e0e0"/><rect x="4" y="6" width="8" height="2" fill="#9e9e9e"/><rect x="7" y="11" width="2" height="2" fill="#f39c12"/><rect x="6" y="13" width="4" height="1" fill="#c0392b"/><rect x="7" y="0" width="2" height="2" fill="#fafafa"/></svg> ACEITAR DERROTA</button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-avatar-shop">
+  <div class="modal-box" style="max-width:560px">
+    <h3 style="display:flex;align-items:center;gap:10px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="18" height="18" fill="none" style="vertical-align:middle;flex-shrink:0"><rect x="2" y="6" width="12" height="9" fill="#4a2c0a"/><rect x="1" y="7" width="14" height="1" fill="#6b3d12"/><rect x="2" y="6" width="12" height="1" fill="#7b4e1a"/><rect x="4" y="2" width="3" height="5" fill="none" stroke="#ffd54f" stroke-width="1"/><rect x="9" y="2" width="3" height="5" fill="none" stroke="#ffd54f" stroke-width="1"/><rect x="5" y="9" width="2" height="3" fill="#f39c12"/><rect x="9" y="9" width="2" height="3" fill="#f39c12"/><rect x="7" y="8" width="2" height="2" fill="#ffd54f"/></svg> LOJA DE AVATARES</h3>
+    <p style="font-size:.85rem;color:var(--ink-m);margin-bottom:4px"><b id="shop-xp-display" style="color:var(--amber-l)">0</b> XP disponíveis</p>
+    <div class="avatar-grid" id="avatar-grid"></div>
+    <div class="btns" style="margin-top:8px">
+      <button onclick="fecharModal('modal-avatar-shop')">Fechar</button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-levels">
+  <div class="modal-box" style="max-width:560px">
+    <h3 style="display:flex;align-items:center;gap:10px;font-size:.62rem">
+      <canvas id="levels-header-icon" width="32" height="32" style="image-rendering:pixelated;vertical-align:middle"></canvas>
+      TODOS OS NÍVEIS
+    </h3>
+    <p style="font-size:.88rem;color:var(--ink-m);margin-bottom:6px">Selecione o título que quer utilizar.</p>
+    <div id="levels-modal-body" class="levels-scroll-body" style="max-height:460px;overflow-y:auto;padding-right:6px"></div>
+    <div class="btns" style="margin-top:6px">
+      <button class="btn-primary" onclick="tentarUparNivel()" id="btn-upar-nivel">[ UP ] Upar de Nível</button>
+      <button onclick="fecharModal('modal-levels')">Fechar</button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-reset-perfil">
+  <div class="modal-box">
+    <h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:4px"><rect x="7" y="1" width="2" height="2" fill="#fcd34d"/><rect x="6" y="3" width="4" height="1" fill="#fcd34d"/><rect x="5" y="4" width="6" height="1" fill="#fcd34d"/><rect x="4" y="5" width="8" height="6" fill="#fcd34d"/><rect x="3" y="11" width="10" height="2" fill="#fcd34d"/><rect x="2" y="13" width="12" height="2" fill="#fcd34d"/><rect x="7" y="7" width="2" height="3" fill="#0c0c0c"/><rect x="7" y="11" width="2" height="1" fill="#0c0c0c"/></svg> RESETAR PERFIL</h3>
+    <p>Deseja excluir todos os dados de perfil?</p>
+    <p style="color:#fca5a5;font-size:.85rem;margin-top:8px">Ação irreversível. Dados de peso, altura, objetivo e metas serão apagados.</p>
+    <div class="btns">
+      <button class="btn-red" onclick="confirmarResetPerfil()"><img class="_i2"> Sim, excluir</button>
+      <button onclick="fecharModal('modal-reset-perfil')">Não</button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-gen">
+  <div class="modal-box">
+    <h3 id="modal-gen-title"></h3>
+    <p id="modal-gen-msg"></p>
+    <div class="btns">
+      <button class="btn-red" id="modal-gen-ok">Confirmar</button>
+      <button onclick="fecharModal('modal-gen')">Cancelar</button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-skin-confirm">
+  <div class="modal-box" style="max-width:280px;text-align:center">
+    <div id="skin-confirm-canvas-wrap" style="margin:0 auto 10px;width:72px;height:72px"></div>
+    <h3 id="skin-confirm-title" style="font-size:.55rem;margin:0 0 6px;color:var(--amber-l)"></h3>
+    <p id="skin-confirm-msg" style="font-size:.82rem;color:var(--ink-m);margin:0 0 14px;line-height:1.5"></p>
+    <div class="btns" style="justify-content:center;gap:10px">
+      <button class="btn-green" id="skin-confirm-yes" style="min-width:70px;background:var(--green-l);color:#000;border-color:var(--green-l)">Sim</button>
+      <button class="btn-red" onclick="fecharModal('modal-skin-confirm')" style="min-width:70px">Não</button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-title-equip">
+  <div class="modal-box" style="max-width:300px">
+    <h3 style="font-size:.5rem;color:var(--amber-l);margin:0 0 10px">EQUIPAR TÍTULO</h3>
+    <p style="font-size:.8rem;color:var(--ink-m);margin:0 0 12px">Escolha o título a exibir:</p>
+    <div id="title-list" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto"></div>
+    <div class="btns" style="margin-top:12px;justify-content:center">
+      <button class="btn-red" onclick="fecharModal('modal-title-equip')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+</script>
+<div id="banner-motivacional" style="
+  position:fixed;bottom:0;left:0;right:0;
+  background:linear-gradient(90deg,#0a0a0a,#1c0808,#0a0a0a);
+  border-top:2px solid #701313;
+  padding:10px 14px;
+  display:flex;align-items:center;gap:10px;
+  z-index:900;
+  min-height:54px;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+">
+  <span id="banner-icone" style="color:#701313;font-size:20px;flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="18" height="18" fill="none" style="vertical-align:middle"><rect x="1" y="1" width="14" height="10" fill="#922b21"/><rect x="1" y="1" width="14" height="1" fill="#c0392b"/><rect x="3" y="4" width="4" height="1" fill="#fca5a5"/><rect x="3" y="6" width="8" height="1" fill="#fca5a5"/><rect x="3" y="8" width="6" height="1" fill="#fca5a5"/><rect x="3" y="11" width="3" height="3" fill="#922b21"/></svg></span>
+  <div id="banner-track" style="flex:1;overflow:hidden;min-width:0;position:relative;height:22px">
+    <span id="frase-atual" style="
+      position:absolute;left:0;top:0;
+      white-space:nowrap;
+      font-size:14px;font-style:italic;color:#ddd;
+      transition:opacity 0.5s,transform 0.5s;
+      opacity:1;transform:translateY(0);
+      will-change:transform,opacity;
+    "></span>
+  </div>
+  <span id="frase-autor" style="
+    color:#888;font-size:11px;white-space:nowrap;
+    flex-shrink:0;font-style:normal;
+  "></span>
+</div>
+<div style="height:62px"></div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     MACRO QUEST TUTORIAL
+═══════════════════════════════════════════════════════ -->
+<div id="tut-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0);pointer-events:none">
+
+  <!-- Spotlight highlight box -->
+  <div id="tut-spotlight" style="position:fixed;pointer-events:none;z-index:100000;transition:all .4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 0 9999px rgba(0,0,0,.75);border-radius:4px;border:2px solid var(--red-l);display:none"></div>
+
+  <!-- Tooltip card -->
+  <div id="tut-card" style="
+    position:fixed;z-index:100001;pointer-events:auto;
+    background:#141414;
+    border:1px solid #2a2a2a;
+    border-top:2px solid var(--red);
+    border-radius:4px;
+    padding:16px 18px;
+    max-width:340px;
+    width:calc(100vw - 16px);
+    max-height:calc(var(--vh, 1vh) * 60);
+    overflow-y:auto;
+    box-shadow:0 16px 50px rgba(0,0,0,.9),0 0 30px rgba(192,57,43,.15);
+    transition:all .35s cubic-bezier(.4,0,.2,1);
+    left:8px;top:50%;transform:translateY(-50%);
+  ">
+    <div id="tut-step-indicator" style="font-family:var(--font-pixel);font-size:.3rem;color:var(--ink-f);letter-spacing:.08em;margin-bottom:10px"></div>
+    <div id="tut-title" style="font-family:var(--font-pixel);font-size:.52rem;color:var(--red-l);letter-spacing:.06em;margin-bottom:10px;text-shadow:0 0 14px rgba(231,76,60,.4);line-height:1.6"></div>
+    <div id="tut-text" style="font-family:var(--font-body);font-size:.95rem;color:var(--ink-m);line-height:1.7;margin-bottom:16px"></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button id="tut-prev" onclick="tutPrev()" style="font-family:var(--font-pixel);font-size:.3rem;padding:7px 12px;background:var(--raised);color:var(--ink-m);border:1px solid var(--line-s);border-radius:2px;cursor:pointer;display:none">◄ VOLTAR</button>
+      <button id="tut-next" onclick="tutNext()" style="font-family:var(--font-pixel);font-size:.3rem;padding:7px 14px;background:var(--red);color:#fff;border:1px solid var(--red-l);border-radius:2px;cursor:pointer;box-shadow:0 0 14px rgba(192,57,43,.4)">PRÓXIMO ►</button>
+      <button id="tut-skip" onclick="tutPular()" style="font-family:var(--font-pixel);font-size:.28rem;padding:6px 10px;background:transparent;color:#444;border:1px solid #2a2a2a;border-radius:2px;cursor:pointer;margin-left:auto">PULAR</button>
+    </div>
+    <div id="tut-prog" style="height:3px;background:var(--line);border-radius:2px;margin-top:14px;overflow:hidden">
+      <div id="tut-prog-bar" style="height:100%;background:var(--red);border-radius:2px;transition:width .4s ease;width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Welcome screen -->
+  <div id="tut-welcome" style="
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;text-align:center;padding:24px;z-index:100002;pointer-events:auto;background:rgba(0,0,0,.92);backdrop-filter:blur(6px)
+  ">
+    <div style="font-family:var(--font-pixel);font-size:.35rem;color:var(--amber-l);letter-spacing:.15em;margin-bottom:12px;opacity:.8">▸ MACRO QUEST ◂</div>
+    <div style="font-family:var(--font-pixel);font-size:clamp(.55rem,2.5vw,.9rem);color:var(--red-l);text-shadow:0 0 30px rgba(231,76,60,.7),3px 3px 0 #000;margin-bottom:8px;line-height:1.8">BEM-VINDO,<br>GUERREIRO!</div>
+    <div style="font-family:var(--font-vt);font-size:1.1rem;color:var(--ink-m);letter-spacing:.12em;margin-bottom:30px">Já conhece o app?</div>
+    <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:300px">
+      <button onclick="tutEscolha(false)" style="
+        font-family:var(--font-pixel);font-size:.38rem;
+        padding:14px 20px;background:rgba(41,128,185,.18);color:#7dd3fc;
+        border:1px solid rgba(41,128,185,.6);border-radius:3px;cursor:pointer;
+        box-shadow:0 0 16px rgba(41,128,185,.35),inset 0 1px 0 rgba(255,255,255,.1);
+        letter-spacing:.06em;text-transform:uppercase;
+        transition:all .12s
+      "><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:4px"><rect x="2" y="1" width="8" height="13" fill="#1565c0"/><rect x="2" y="1" width="8" height="1" fill="#7dd3fc"/><rect x="3" y="3" width="5" height="1" fill="#7dd3fc"/><rect x="3" y="5" width="5" height="1" fill="#7dd3fc"/><rect x="3" y="7" width="5" height="1" fill="#4a9"/><rect x="10" y="2" width="4" height="12" fill="#0d47a1"/><rect x="2" y="13" width="12" height="1" fill="#7dd3fc"/></svg> NÃO, QUERO O TUTORIAL</button>
+      <button onclick="tutEscolha(true)" style="
+        font-family:var(--font-pixel);font-size:.38rem;
+        padding:14px 20px;background:rgba(26,188,156,.22);color:#6ee7b7;
+        border:1px solid rgba(46,204,113,.6);border-radius:3px;cursor:pointer;
+        box-shadow:0 0 16px rgba(26,188,156,.35),inset 0 1px 0 rgba(255,255,255,.1);
+        letter-spacing:.06em;text-transform:uppercase;
+        transition:all .12s
+      "><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:4px"><rect x="2" y="8" width="2" height="2" fill="#6ee7b7"/><rect x="4" y="10" width="2" height="2" fill="#6ee7b7"/><rect x="6" y="12" width="2" height="2" fill="#6ee7b7"/><rect x="8" y="10" width="2" height="2" fill="#6ee7b7"/><rect x="10" y="8" width="2" height="2" fill="#6ee7b7"/><rect x="12" y="6" width="2" height="2" fill="#6ee7b7"/><rect x="12" y="4" width="2" height="2" fill="#6ee7b7"/></svg> JÁ SEI USAR</button>
+    </div>
+    <div style="margin-top:20px;display:flex;align-items:center;gap:8px;justify-content:center">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-family:var(--font-vt);font-size:.85rem;color:#555;letter-spacing:.04em;user-select:none">
+        <input type="checkbox" id="tut-skip-forever" style="width:14px;height:14px;cursor:pointer;accent-color:#e74c3c">
+        Não perguntar novamente
+      </label>
+    </div>
+    <div style="font-family:var(--font-vt);font-size:.7rem;color:#333;margin-top:8px;letter-spacing:.06em">você pode ver o tutorial depois nas configurações</div>
+  </div>
+</div>
+
+
+
+
+
+
+<!-- Modal: Configurações -->
+<div class="modal-bg" id="modal-configuracoes">
+  <div class="modal-box" style="max-width:380px">
+    <h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:5px"><rect x="6" y="0" width="4" height="2" fill="#7dd3fc"/><rect x="6" y="14" width="4" height="2" fill="#7dd3fc"/><rect x="0" y="6" width="2" height="4" fill="#7dd3fc"/><rect x="14" y="6" width="2" height="4" fill="#7dd3fc"/><rect x="2" y="2" width="2" height="2" fill="#7dd3fc"/><rect x="12" y="2" width="2" height="2" fill="#7dd3fc"/><rect x="2" y="12" width="2" height="2" fill="#7dd3fc"/><rect x="12" y="12" width="2" height="2" fill="#7dd3fc"/><rect x="4" y="4" width="8" height="8" fill="#2980b9"/><rect x="6" y="6" width="4" height="4" fill="#0c0c0c"/><rect x="7" y="7" width="2" height="2" fill="#7dd3fc"/></svg> CONFIGURAÇÕES</h3>
+    <p style="margin-bottom:16px;color:var(--ink-m);font-size:.9rem">Opções do app</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+      <button class="btn-blue" onclick="reiniciarTutorial()" style="width:100%;justify-content:center;padding:10px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:5px"><rect x="2" y="1" width="8" height="13" fill="#1565c0"/><rect x="2" y="1" width="8" height="1" fill="#7dd3fc"/><rect x="3" y="3" width="5" height="1" fill="#7dd3fc"/><rect x="3" y="5" width="5" height="1" fill="#7dd3fc"/><rect x="3" y="7" width="5" height="1" fill="#4a9"/><rect x="10" y="2" width="4" height="12" fill="#0d47a1"/><rect x="2" y="13" width="12" height="1" fill="#7dd3fc"/></svg> Ver Tutorial</button>
+      <button class="btn-orange" onclick="abrirADM()" style="width:100%;justify-content:center;padding:10px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:5px"><rect x="5" y="1" width="6" height="6" fill="#f39c12"/><rect x="4" y="3" width="2" height="4" fill="#e67e22"/><rect x="10" y="3" width="2" height="4" fill="#e67e22"/><rect x="2" y="7" width="12" height="8" fill="#e67e22"/><rect x="2" y="7" width="12" height="1" fill="#fcd34d"/><rect x="6" y="10" width="4" height="3" fill="#f39c12"/><rect x="7" y="10" width="2" height="2" fill="#fcd34d"/></svg> Opções de ADM</button>
+    </div>
+    <p style="color:var(--ink-f);font-size:.78rem;font-family:var(--font-vt);letter-spacing:.06em;margin-bottom:14px">Feito com carinho por @PrazerSouoGui</p>
+    <button class="btn-red" onclick="fecharModal('modal-configuracoes')" style="width:100%;justify-content:center">Fechar</button>
+  </div>
+</div>
+
+<!-- Modal: ADM Panel -->
+<div class="modal-bg" id="modal-adm">
+  <div class="modal-box" style="max-width:420px">
+    <h3 style="color:var(--amber-l)">[ ADM ] PAINEL ADM</h3>
+    <p style="margin-bottom:16px">Debug de XP</p>
+    <div id="adm-debug-content" style="margin-bottom:16px"></div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px">
+      <button class="btn-green" onclick="admAddXP()" style="padding:8px 14px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="5" y="1" width="2" height="10" fill="#6ee7b7"/><rect x="1" y="5" width="10" height="2" fill="#6ee7b7"/></svg> +50 XP</button>
+      <button class="btn-red" onclick="admRemXP()" style="padding:8px 14px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="1" y="5" width="10" height="2" fill="#fca5a5"/></svg> -50 XP</button>
+      <button class="btn-orange" onclick="admResetXP()" style="padding:8px 14px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="4" y="1" width="6" height="2" fill="#fcd34d"/><rect x="8" y="3" width="2" height="2" fill="#fcd34d"/><rect x="9" y="5" width="2" height="3" fill="#fcd34d"/><rect x="7" y="9" width="4" height="2" fill="#fcd34d"/><rect x="1" y="7" width="8" height="2" fill="#fcd34d"/><rect x="1" y="7" width="2" height="4" fill="#fcd34d"/><rect x="3" y="11" width="2" height="1" fill="#fcd34d"/></svg> Reset XP</button>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--line-s);border-radius:3px;padding:10px 12px;margin-bottom:10px">
+      <div style="font-family:var(--font-vt);font-size:.85rem;color:var(--amber-l);letter-spacing:.08em;margin-bottom:8px;text-align:left">[ XP CUSTOMIZADO ]</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input type="number" id="adm-xp-custom" placeholder="Ex: 500" style="flex:1;min-width:0;font-family:var(--font-vt);font-size:1.1rem;padding:6px 8px;background:var(--raised);color:var(--amber-l);border:1px solid var(--amber);border-radius:2px">
+        <button class="btn-green" onclick="admAddCustomXP()" style="padding:8px 12px;flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="5" y="1" width="2" height="10" fill="#6ee7b7"/><rect x="1" y="5" width="10" height="2" fill="#6ee7b7"/></svg> ADD</button>
+        <button class="btn-red" onclick="admRemCustomXP()" style="padding:8px 12px;flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="1" y="5" width="10" height="2" fill="#fca5a5"/></svg> REM</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button class="btn-blue" onclick="admSetXP()" style="padding:7px 12px;flex:1;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="12" height="12" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="2" y="4" width="10" height="2" fill="#7dd3fc"/><rect x="2" y="8" width="10" height="2" fill="#7dd3fc"/></svg> DEFINIR XP EXATO</button>
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <button class="btn-blue" onclick="fecharModal('modal-adm');abrirConfiguracoes()" style="width:100%;justify-content:center;margin-top:8px">← Voltar</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script src="script.js"></script>
+</body>
+</html>
