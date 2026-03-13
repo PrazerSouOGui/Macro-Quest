@@ -2547,79 +2547,9 @@ let xpData = {
 // ── Lista de fundos disponíveis ─────────────────────────────────
 // Para adicionar um fundo: preencha o campo 'img' com o caminho da imagem.
 // Ex: img: 'assets/backgrounds/floresta.png'
-const BACKGROUNDS = [
-  { id: 'bg_default',   nome: 'Padrão',         custo: 0,    lvlMin: 1,  img: null,                          desc: 'Fundo padrão escuro' },
-  { id: 'bg_dungeon',   nome: 'Masmorra',        custo: 200,  lvlMin: 2,  img: null /* 'assets/bg/dungeon.png' */,  desc: 'Pedras úmidas e tochas flamejantes' },
-  { id: 'bg_arena',     nome: 'Arena',           custo: 350,  lvlMin: 3,  img: null /* 'assets/bg/arena.png' */,   desc: 'O público clama por sangue' },
-  { id: 'bg_forest',    nome: 'Floresta Sombria',custo: 500,  lvlMin: 4,  img: null /* 'assets/bg/forest.png' */,  desc: 'Árvores antigas guardam segredos' },
-  { id: 'bg_volcano',   nome: 'Vulcão',          custo: 700,  lvlMin: 5,  img: null /* 'assets/bg/volcano.png' */, desc: 'Lava e cinzas no horizonte' },
-  { id: 'bg_sky',       nome: 'Céu dos Deuses',  custo: 1000, lvlMin: 7,  img: null /* 'assets/bg/sky.png' */,     desc: 'Nuvens douradas além dos mortais' },
-  { id: 'bg_void',      nome: 'Vazio Eterno',    custo: 1500, lvlMin: 9,  img: null /* 'assets/bg/void.png' */,    desc: 'O nada absoluto... ou quase' },
-  { id: 'bg_olympus',   nome: 'Olimpo',          custo: 2500, lvlMin: 10, img: null /* 'assets/bg/olympus.png' */, desc: 'Somente os deuses chegam aqui' },
-];
+// BACKGROUNDS definido em wallpapers.js
 
-function desenharFundoNoCanvas(ctx, bgId, size) {
-  ctx.clearRect(0, 0, size, size);
-  if (!bgId || bgId === 'bg_default') {
-    ctx.fillStyle = '#0e0e0e';
-    ctx.fillRect(0, 0, size, size);
-    return;
-  }
-  const bg = BACKGROUNDS.find(b => b.id === bgId);
-  if (bg && bg.img) {
-    // Imagem real — carregar e redesenhar skin por cima de forma assíncrona
-    const imgEl = new Image();
-    imgEl.onload = () => {
-      ctx.drawImage(imgEl, 0, 0, size, size);
-      drawAvatar(ctx, xpData.equippedAvatar, size);
-    };
-    imgEl.onerror = () => {
-      ctx.fillStyle = '#0e0e0e';
-      ctx.fillRect(0, 0, size, size);
-      drawAvatar(ctx, xpData.equippedAvatar, size);
-    };
-    imgEl.src = bg.img;
-    // Enquanto carrega, fundo escuro para não ficar branco
-    ctx.fillStyle = '#0e0e0e';
-    ctx.fillRect(0, 0, size, size);
-    return;
-  }
-  // Gradientes placeholder (síncronos)
-  const gradients = {
-    bg_dungeon:  { cx:0.35, cy:0.7,  c0:'#2d1a08', c1:'#1a0d05', c2:'#090705' },
-    bg_arena:    { cx:0.5,  cy:0.8,  c0:'#4a1010', c1:'#2a0808', c2:'#0d0404' },
-    bg_forest:   { cx:0.4,  cy:0.55, c0:'#124d18', c1:'#082e0c', c2:'#041507' },
-    bg_volcano:  { cx:0.5,  cy:1.0,  c0:'#8c3200', c1:'#4a1800', c2:'#150800' },
-    bg_sky:      { cx:0.5,  cy:0.05, c0:'#1e5fa0', c1:'#0e2d5a', c2:'#050e1e' },
-    bg_void:     { cx:0.5,  cy:0.5,  c0:'#2a0d5c', c1:'#12052e', c2:'#040210' },
-    bg_olympus:  { cx:0.5,  cy:0.15, c0:'#8c7200', c1:'#4a3c00', c2:'#1a1500' },
-  };
-  const g = gradients[bgId];
-  if (g) {
-    const grad = ctx.createRadialGradient(
-      size*g.cx, size*g.cy, 0,
-      size*0.5,  size*0.5,  size*0.85
-    );
-    grad.addColorStop(0,   g.c0);
-    grad.addColorStop(0.5, g.c1);
-    grad.addColorStop(1,   g.c2);
-    ctx.fillStyle = grad;
-  } else {
-    ctx.fillStyle = '#0e0e0e';
-  }
-  ctx.fillRect(0, 0, size, size);
-  // Pixel art texture overlay sutil
-  ctx.globalAlpha = 0.07;
-  for (let y = 0; y < size; y += 4) {
-    for (let x = 0; x < size; x += 4) {
-      if ((x + y) % 8 === 0) {
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(x, y, 2, 2);
-      }
-    }
-  }
-  ctx.globalAlpha = 1;
-}
+// desenharFundoNoCanvas — implementada em wallpapers.js
 
 function aplicarFundoAvatar() {
   // O fundo agora é desenhado diretamente no canvas (via desenharFundoNoCanvas)
@@ -2855,18 +2785,18 @@ function confirmarLevelUp() {
 function lojaTab(tab) {
   const isSkins = tab === 'skins';
   _$_('loja-panel-skins').style.display = isSkins ? '' : 'none';
-  _$_('loja-panel-fundos').style.display = isSkins ? 'none' : '';
+  _$_('loja-panel-wallpapers').style.display = isSkins ? 'none' : '';
   const tSkins = _$_('loja-tab-skins');
-  const tFundos = _$_('loja-tab-fundos');
+  const tWall = _$_('loja-tab-wallpapers');
   if (tSkins) {
     tSkins.style.borderBottomColor = isSkins ? 'var(--amber)' : 'transparent';
     tSkins.style.background = isSkins ? 'var(--card)' : 'transparent';
     tSkins.style.color = isSkins ? 'var(--amber-l)' : 'var(--ink-f)';
   }
-  if (tFundos) {
-    tFundos.style.borderBottomColor = !isSkins ? 'var(--amber)' : 'transparent';
-    tFundos.style.background = !isSkins ? 'var(--card)' : 'transparent';
-    tFundos.style.color = !isSkins ? 'var(--amber-l)' : 'var(--ink-f)';
+  if (tWall) {
+    tWall.style.borderBottomColor = !isSkins ? 'var(--amber)' : 'transparent';
+    tWall.style.background = !isSkins ? 'var(--card)' : 'transparent';
+    tWall.style.color = !isSkins ? 'var(--amber-l)' : 'var(--ink-f)';
   }
   if (isSkins) renderAvatarGrid();
   else { renderBackgroundGrid(); }
@@ -2878,7 +2808,7 @@ function abrirAvatarShop(aba) {
   lojaTab(aba || 'skins');
 }
 function abrirBackgroundShop() {
-  abrirAvatarShop('fundos');
+  abrirAvatarShop('wallpapers');
 }
 
 function renderBackgroundGrid() {

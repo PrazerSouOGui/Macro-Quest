@@ -1,0 +1,174 @@
+// ═══════════════════════════════════════════════════════════════
+// firestore.rules — Macro Quest
+// Copie e cole no Firebase Console → Firestore → Rules
+// ═══════════════════════════════════════════════════════════════
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ────────────────────────────────────────────────
+    function isAuth() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isAuth() && request.auth.uid == uid;
+    }
+    function isValidTimestamp(field) {
+      return field == request.time;
+    }
+
+    // ── /users/{uid} ───────────────────────────────────────────
+    // Apenas o próprio usuário pode criar/editar seu perfil
+    match /users/{uid} {
+      allow read: if isAuth();  // todos logados podem ler (ranking, busca)
+
+      allow create: if
+        isOwner(uid) &&
+        request.resource.data.keys().hasOnly([
+          "displayName", "tag", "level", "totalXP",
+          "avatar", "equippedBackground", "createdAt"
+        ]) &&
+        request.resource.data.displayName is string &&
+        request.resource.data.displayName.size() >= 1 &&
+        request.resource.data.displayName.size() <= 30 &&
+        request.resource.data.level is int &&
+        request.resource.data.level >= 1 &&
+        request.resource.data.totalXP is int &&
+        request.resource.data.totalXP >= 0;
+
+      allow update: if
+        isOwner(uid) &&
+        // Impede alterar campos críticos de outros usuários
+        request.resource.data.keys().hasAny([
+          "displayName", "tag", "level", "totalXP",
+          "avatar", "equippedBackground"
+        ]);
+
+      allow delete: if isOwner(uid);
+
+      // Sub-coleção de amigos
+      match /friends/{friendUid} {
+        allow read: if isAuth();
+        allow write: if isOwner(uid);
+      }
+    }
+
+    // ── /friendRequests/{reqId} ────────────────────────────────
+    // Apenas o remetente pode criar; apenas destinatário pode aceitar/recusar
+    match /friendRequests/{reqId} {
+      allow read: if
+        isAuth() && (
+          resource.data.from == request.auth.uid ||
+          resource.data.to   == request.auth.uid
+        );
+
+      allow create: if
+        isAuth() &&
+        // O remetente deve ser o usuário autenticado
+        request.resource.data.from == request.auth.uid &&
+        // Campos obrigatórios e apenas eles
+        request.resource.data.keys().hasOnly(["from", "to", "status", "createdAt"]) &&
+        // Valores válidos
+        request.resource.data.from is string &&
+        request.resource.data.to   is string &&
+        request.resource.data.from != request.resource.data.to &&  // não pode enviar para si mesmo
+        request.resource.data.status == "pending" &&
+        // Não pode enviar para si mesmo
+        request.resource.data.to != request.auth.uid;
+
+      allow update: if
+        isAuth() && (
+          // Apenas o destinatário pode aceitar ou recusar
+          (resource.data.to == request.auth.uid &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"]) &&
+           request.resource.data.status in ["accepted", "rejected"]) ||
+          // O remetente pode cancelar
+          (resource.data.from == request.auth.uid &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"]) &&
+           request.resource.data.status == "cancelled")
+        );
+
+      allow delete: if
+        isAuth() && (
+          resource.data.from == request.auth.uid ||
+          resource.data.to   == request.auth.uid
+        );
+    }
+
+    // ── /xpGifts/{giftId} ─────────────────────────────────────
+    // Presentes de XP entre jogadores
+    match /xpGifts/{giftId} {
+      allow read: if
+        isAuth() && (
+          resource.data.from == request.auth.uid ||
+          resource.data.to   == request.auth.uid
+        );
+
+      allow create: if
+        isAuth() &&
+        request.resource.data.from == request.auth.uid &&
+        request.resource.data.keys().hasOnly(["from", "to", "amount", "createdAt", "status"]) &&
+        request.resource.data.from is string &&
+        request.resource.data.to   is string &&
+        request.resource.data.from != request.resource.data.to &&
+        request.resource.data.amount is int &&
+        request.resource.data.amount >= 1 &&
+        request.resource.data.amount <= 500 &&          // limite de XP por presente
+        request.resource.data.status == "pending";
+
+      allow update: if
+        isAuth() &&
+        resource.data.to == request.auth.uid &&         // apenas o destinatário pode marcar como recebido
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"]) &&
+        request.resource.data.status == "received";
+
+      allow delete: if
+        isAuth() && (
+          resource.data.from == request.auth.uid ||
+          resource.data.to   == request.auth.uid
+        );
+    }
+
+    // ── /xpRequests/{reqId} ───────────────────────────────────
+    // Pedidos de XP entre amigos
+    match /xpRequests/{reqId} {
+      allow read: if
+        isAuth() && (
+          resource.data.from == request.auth.uid ||
+          resource.data.to   == request.auth.uid
+        );
+
+      allow create: if
+        isAuth() &&
+        request.resource.data.from == request.auth.uid &&
+        request.resource.data.keys().hasOnly(["from", "to", "amount", "status", "createdAt"]) &&
+        request.resource.data.from is string &&
+        request.resource.data.to   is string &&
+        request.resource.data.from != request.resource.data.to &&
+        request.resource.data.amount is int &&
+        request.resource.data.amount >= 1 &&
+        request.resource.data.amount <= 30 &&           // limite de XP por pedido
+        request.resource.data.status == "pending";
+
+      allow update: if
+        isAuth() && (
+          resource.data.to   == request.auth.uid ||
+          resource.data.from == request.auth.uid
+        ) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"]) &&
+        request.resource.data.status in ["accepted", "rejected", "cancelled"];
+
+      allow delete: if
+        isAuth() && (
+          resource.data.from == request.auth.uid ||
+          resource.data.to   == request.auth.uid
+        );
+    }
+
+    // ── Bloquear tudo mais ────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
