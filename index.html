@@ -25,15 +25,16 @@
 </div>
 <div class="xp-profile-card" id="xp-player-card">
   <div class="xp-avatar-area">
-    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-      <div class="xp-avatar-frame" onclick="abrirAvatarShop()" title="Clique para trocar skin">
-        <canvas id="avatar-canvas" width="72" height="72"></canvas>
-        <div class="xp-avatar-edit-hint">SKIN</div>
-      </div>
-      <button onclick="abrirBackgroundShop()" title="Trocar fundo do personagem" style="font-family:var(--font-pixel);font-size:.24rem;padding:3px 6px;background:rgba(41,128,185,.1);color:#7dd3fc;border-color:rgba(41,128,185,.3);letter-spacing:.04em;width:100%">🖼 FUNDO</button>
+    <div class="xp-avatar-frame" onclick="abrirAvatarShop()" title="Clique para trocar skin">
+      <canvas id="avatar-canvas" width="72" height="72"></canvas>
+      <div class="xp-avatar-edit-hint">SKIN</div>
     </div>
     <div class="xp-info">
-      <div class="xp-player-name" id="xp-player-name-display">SEU NOME</div>
+      <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
+        <div class="xp-player-name" id="xp-player-name-display">SEU NOME</div>
+        <span id="xp-tag-display" style="font-family:var(--font-vt);font-size:.85rem;color:var(--ink-f);letter-spacing:.05em"></span>
+        <button id="btn-toggle-tag" onclick="toggleTagVisibility()" title="Ocultar/mostrar tag" style="background:none;border:none;padding:0 2px;cursor:pointer;font-size:.7rem;color:var(--ink-f);opacity:.6;line-height:1">👁</button>
+      </div>
       <div class="xp-title" id="xp-title-display">Novato em Macro</div>
       <div class="xp-level-badge">
         <canvas id="xp-level-icon-canvas" width="20" height="20" style="image-rendering:pixelated;vertical-align:middle"></canvas>
@@ -48,6 +49,7 @@
   <div class="xp-name-row">
     <input type="text" id="xp-name-input" placeholder="Seu nome..." maxlength="20" oninput="salvarXPPerfil()">
     <button class="btn-orange" onclick="abrirAvatarShop()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="2" y="6" width="12" height="9" fill="#4a2c0a"/><rect x="1" y="7" width="14" height="1" fill="#6b3d12"/><rect x="2" y="6" width="12" height="1" fill="#7b4e1a"/><rect x="4" y="2" width="3" height="5" fill="none" stroke="#ffd54f" stroke-width="1"/><rect x="9" y="2" width="3" height="5" fill="none" stroke="#ffd54f" stroke-width="1"/><rect x="5" y="9" width="2" height="3" fill="#f39c12"/><rect x="9" y="9" width="2" height="3" fill="#f39c12"/><rect x="7" y="8" width="2" height="2" fill="#ffd54f"/><rect x="3" y="11" width="2" height="1" fill="#e67e22"/><rect x="11" y="11" width="2" height="1" fill="#e67e22"/></svg> Loja</button>
+    <button class="btn-blue" onclick="abrirBackgroundShop()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap">🖼 Fundos</button>
     <button class="btn-blue" onclick="abrirModalLevels()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="1" y="12" width="3" height="3" fill="#3498db"/><rect x="5" y="9" width="3" height="6" fill="#2980b9"/><rect x="9" y="6" width="3" height="9" fill="#1abc9c"/><rect x="13" y="3" width="3" height="12" fill="#f39c12"/><rect x="1" y="11" width="3" height="1" fill="#7dd3fc"/><rect x="5" y="8" width="3" height="1" fill="#7dd3fc"/><rect x="9" y="5" width="3" height="1" fill="#6ee7b7"/><rect x="13" y="2" width="3" height="1" fill="#fcd34d"/></svg> Níveis</button>
     <button class="btn-green" id="btn-social" onclick="abrirSocial()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap;position:relative"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="1" y="3" width="5" height="5" fill="#2ecc71"/><rect x="0" y="8" width="7" height="5" fill="#27ae60"/><rect x="9" y="3" width="5" height="5" fill="#2ecc71"/><rect x="8" y="8" width="7" height="5" fill="#27ae60"/><rect x="6" y="6" width="4" height="1" fill="#6ee7b7"/></svg> Social<span id="social-notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#e74c3c;color:#fff;font-family:var(--font-pixel);font-size:.28rem;padding:2px 4px;border-radius:2px;min-width:14px;text-align:center;line-height:1.4">!</span></button>
     <button class="btn-blue" onclick="abrirConfiguracoes()" style="font-size:.7rem;padding:6px 10px;white-space:nowrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" style="vertical-align:middle;margin-right:3px"><rect x="6" y="0" width="4" height="2" fill="#7dd3fc"/><rect x="6" y="14" width="4" height="2" fill="#7dd3fc"/><rect x="0" y="6" width="2" height="4" fill="#7dd3fc"/><rect x="14" y="6" width="2" height="4" fill="#7dd3fc"/><rect x="2" y="2" width="2" height="2" fill="#7dd3fc"/><rect x="12" y="2" width="2" height="2" fill="#7dd3fc"/><rect x="2" y="12" width="2" height="2" fill="#7dd3fc"/><rect x="12" y="12" width="2" height="2" fill="#7dd3fc"/><rect x="4" y="4" width="8" height="8" fill="#2980b9"/><rect x="6" y="6" width="4" height="4" fill="#0c0c0c"/><rect x="7" y="7" width="2" height="2" fill="#7dd3fc"/></svg> Config</button>
@@ -503,6 +505,13 @@
       <button class="btn-orange" id="btn-adm-config" onclick="abrirADM()" style="width:100%;justify-content:center;padding:10px;display:none"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:5px"><rect x="5" y="1" width="6" height="6" fill="#f39c12"/><rect x="4" y="3" width="2" height="4" fill="#e67e22"/><rect x="10" y="3" width="2" height="4" fill="#e67e22"/><rect x="2" y="7" width="12" height="8" fill="#e67e22"/><rect x="2" y="7" width="12" height="1" fill="#fcd34d"/><rect x="6" y="10" width="4" height="3" fill="#f39c12"/><rect x="7" y="10" width="2" height="2" fill="#fcd34d"/></svg> Opções de ADM</button>
     </div>
     <p style="color:var(--ink-f);font-size:.78rem;font-family:var(--font-vt);letter-spacing:.06em;margin-bottom:14px">Feito com carinho por @PrazerSouoGui</p>
+    <div id="config-logout-area" style="display:none;margin-bottom:10px">
+      <div style="font-family:var(--font-vt);font-size:.85rem;color:var(--ink-f);margin-bottom:6px" id="config-account-info"></div>
+      <button class="btn-red" onclick="sairDaContaConfig()" style="width:100%;justify-content:center;padding:9px">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="none" style="vertical-align:middle;margin-right:5px"><rect x="1" y="7" width="9" height="2" fill="#fca5a5"/><rect x="7" y="4" width="2" height="2" fill="#fca5a5"/><rect x="7" y="9" width="2" height="2" fill="#fca5a5"/><rect x="9" y="2" width="2" height="2" fill="#fca5a5"/><rect x="9" y="11" width="2" height="2" fill="#fca5a5"/><rect x="11" y="1" width="4" height="14" fill="#c0392b"/></svg>
+        Sair da Conta
+      </button>
+    </div>
     <button class="btn-red" onclick="fecharModal('modal-configuracoes')" style="width:100%;justify-content:center">Fechar</button>
   </div>
 </div>
@@ -586,10 +595,11 @@
         <span style="color:var(--green-l)">SOCIAL</span>
       </h3>
       <div id="social-login-header" style="display:none;margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:8px;font-family:var(--font-vt);font-size:.95rem;color:var(--ink-m)">
+        <div style="display:flex;align-items:center;gap:8px;font-family:var(--font-vt);font-size:.95rem;color:var(--ink-m);flex-wrap:wrap">
           <canvas id="social-my-avatar" width="28" height="28" style="image-rendering:pixelated;border:1px solid var(--amber);border-radius:2px"></canvas>
           <span id="social-my-name" style="color:var(--amber-l);font-family:var(--font-pixel);font-size:.38rem"></span>
           <span id="social-my-tag" style="color:var(--ink-f);font-size:.78rem"></span>
+          <button onclick="abrirEditarTag()" style="font-family:var(--font-pixel);font-size:.24rem;padding:3px 7px;background:rgba(243,156,18,.08);color:var(--amber-l);border:1px solid rgba(243,156,18,.3);border-radius:2px;cursor:pointer;letter-spacing:.04em"># TAG</button>
         </div>
       </div>
       <div style="display:flex;gap:0;border-bottom:none" id="social-tabs">
@@ -677,6 +687,59 @@
   </div>
 </div>
 
+<!-- Modal: Enviar XP para Amigo -->
+<div class="modal-bg" id="modal-enviar-xp">
+  <div class="modal-box" style="max-width:340px;text-align:left">
+    <h3 style="text-align:center;margin-bottom:4px">⚡ ENVIAR XP</h3>
+    <p id="enviar-xp-nome" style="text-align:center;font-family:var(--font-vt);font-size:1.05rem;color:var(--amber-l);margin-bottom:14px"></p>
+    <div style="font-family:var(--font-vt);font-size:.9rem;color:var(--ink-m);margin-bottom:8px">Seu XP atual: <b id="enviar-xp-meu" style="color:var(--amber-l)">0</b></div>
+    <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+      <button onclick="definirQtdXP(10)"  class="btn-orange" style="flex:1;justify-content:center;padding:7px;font-size:.8rem">10 XP</button>
+      <button onclick="definirQtdXP(25)"  class="btn-orange" style="flex:1;justify-content:center;padding:7px;font-size:.8rem">25 XP</button>
+      <button onclick="definirQtdXP(50)"  class="btn-orange" style="flex:1;justify-content:center;padding:7px;font-size:.8rem">50 XP</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px">
+      <label style="font-family:var(--font-vt);font-size:.9rem;color:var(--ink-m);white-space:nowrap">Outro valor:</label>
+      <input type="number" id="enviar-xp-valor" min="1" max="500" placeholder="Ex: 30" style="flex:1;font-family:var(--font-vt);font-size:1.05rem;padding:7px 10px">
+    </div>
+    <div id="enviar-xp-erro" style="display:none;color:#fca5a5;font-family:var(--font-vt);font-size:.88rem;margin-bottom:8px;padding:5px 8px;background:rgba(192,57,43,.1);border:1px solid rgba(231,76,60,.3);border-radius:2px"></div>
+    <div class="btns" style="justify-content:center;gap:10px">
+      <button class="btn-green" onclick="confirmarEnvioXP()" style="flex:1;justify-content:center;padding:10px">⚡ Enviar</button>
+      <button onclick="fecharModal('modal-enviar-xp')" style="flex:1;justify-content:center;padding:10px">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar TAG -->
+<div class="modal-bg" id="modal-editar-tag">
+  <div class="modal-box" style="max-width:340px">
+    <h3 style="text-align:center"># EDITAR TAG</h3>
+    <p style="font-size:.9rem;color:var(--ink-m);margin-bottom:14px;line-height:1.7">Escolha sua tag única. Ela aparece ao lado do seu nome e serve para amigos te encontrarem.</p>
+    <div style="display:flex;align-items:center;gap:0;margin-bottom:6px">
+      <span style="font-family:var(--font-pixel);font-size:.55rem;color:var(--amber-l);padding:8px 10px;background:var(--raised);border:1px solid var(--line-s);border-right:none;border-radius:2px 0 0 2px">#</span>
+      <input type="text" id="tag-input" maxlength="12" placeholder="suatag" style="flex:1;border-radius:0 2px 2px 0;font-family:var(--font-vt);font-size:1.1rem;padding:8px 10px;text-transform:lowercase" oninput="this.value=this.value.replace(/[^a-z0-9_]/gi,'').toLowerCase()">
+    </div>
+    <p style="font-family:var(--font-vt);font-size:.82rem;color:var(--ink-f);margin-bottom:12px">Apenas letras, números e _ (mín. 3, máx. 12)</p>
+    <div id="tag-edit-msg" style="display:none;font-family:var(--font-vt);font-size:.88rem;padding:6px 10px;border-radius:2px;margin-bottom:10px"></div>
+    <div class="btns" style="justify-content:center;gap:10px">
+      <button class="btn-green" onclick="salvarTag()" style="flex:1;justify-content:center;padding:10px">✓ Salvar</button>
+      <button onclick="fecharModal('modal-editar-tag')" style="flex:1;justify-content:center;padding:10px">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar Sair -->
+<div class="modal-bg" id="modal-confirmar-sair">
+  <div class="modal-box" style="max-width:320px;text-align:center">
+    <h3 style="color:var(--red-l)">⚠ SAIR DA CONTA</h3>
+    <p style="margin:10px 0 18px;font-size:1rem;line-height:1.7">Tem certeza que quer sair?<br><span style="font-size:.88rem;color:var(--ink-f)">Você precisará fazer login novamente.</span></p>
+    <div class="btns" style="justify-content:center;gap:10px">
+      <button class="btn-red" onclick="confirmarSairApp()" style="flex:1;justify-content:center;padding:10px">Sair</button>
+      <button onclick="fecharModal('modal-confirmar-sair')" style="flex:1;justify-content:center;padding:10px">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: Ver Perfil de Amigo -->
 <div class="modal-bg" id="modal-perfil-amigo">
   <div class="modal-box" style="max-width:380px">
@@ -712,6 +775,65 @@
   const db = getFirestore(app);
 
   // ── Utils ────────────────────────────────────────────
+  // ── TAG: estado de visibilidade ────────────────────
+  window._tagVisible = localStorage.getItem('mq_tag_visible') !== 'false';
+
+  window.toggleTagVisibility = function() {
+    window._tagVisible = !window._tagVisible;
+    localStorage.setItem('mq_tag_visible', window._tagVisible);
+    atualizarTagDisplay();
+  };
+
+  function atualizarTagDisplay() {
+    const tagEl = document.getElementById('xp-tag-display');
+    const btnToggle = document.getElementById('btn-toggle-tag');
+    const tag = socialUserData ? socialUserData.tag : null;
+    if (!tagEl) return;
+    if (tag && window._tagVisible) {
+      tagEl.textContent = '#' + tag;
+      tagEl.style.display = '';
+    } else {
+      tagEl.textContent = '';
+    }
+    if (btnToggle) {
+      btnToggle.textContent = window._tagVisible ? '👁' : '🚫';
+      btnToggle.title = window._tagVisible ? 'Ocultar tag' : 'Mostrar tag';
+    }
+  }
+
+  window.abrirEditarTag = function() {
+    const currentTag = socialUserData ? (socialUserData.tag || '') : '';
+    document.getElementById('tag-input').value = currentTag;
+    document.getElementById('tag-edit-msg').style.display = 'none';
+    abrirModal('modal-editar-tag');
+  };
+
+  window.salvarTag = async function() {
+    const val = document.getElementById('tag-input').value.trim().toLowerCase();
+    const msgEl = document.getElementById('tag-edit-msg');
+    if (val.length < 3) {
+      msgEl.style.display='block'; msgEl.style.background='rgba(192,57,43,.1)'; msgEl.style.border='1px solid rgba(231,76,60,.3)'; msgEl.style.color='#fca5a5';
+      msgEl.textContent='Tag muito curta (mín. 3 caracteres).'; return;
+    }
+    // Verificar se tag já está em uso
+    try {
+      const existing = await getDocs(query(collection(db,'users'), where('tag','==',val), limit(2)));
+      const taken = existing.docs.some(d => d.id !== socialUser.uid);
+      if (taken) {
+        msgEl.style.display='block'; msgEl.style.background='rgba(192,57,43,.1)'; msgEl.style.border='1px solid rgba(231,76,60,.3)'; msgEl.style.color='#fca5a5';
+        msgEl.textContent='Tag já em uso. Escolha outra.'; return;
+      }
+      await updateDoc(doc(db,'users',socialUser.uid), { tag: val });
+      if (socialUserData) socialUserData.tag = val;
+      fecharModal('modal-editar-tag');
+      atualizarTagDisplay();
+      if(typeof showToast==='function') showToast('Tag #' + val + ' salva!', 'green', 2500);
+    } catch(e) {
+      msgEl.style.display='block'; msgEl.style.background='rgba(192,57,43,.1)'; msgEl.style.border='1px solid rgba(231,76,60,.3)'; msgEl.style.color='#fca5a5';
+      msgEl.textContent='Erro ao salvar. Tente novamente.';
+    }
+  };
+
   function gerarTag(nome) {
     const clean = nome.replace(/[^a-z0-9]/gi,'').toLowerCase().slice(0,6) || 'user';
     return clean + Math.floor(1000+Math.random()*9000);
@@ -747,6 +869,11 @@
       // Mostrar/ocultar botão ADM no Config
       const btnAdm = document.getElementById('btn-adm-config');
       if (btnAdm) btnAdm.style.display = window._isAdmin ? 'flex' : 'none';
+      // Mostrar sair da conta no Config
+      const logoutArea = document.getElementById('config-logout-area');
+      const accountInfo = document.getElementById('config-account-info');
+      if (logoutArea) logoutArea.style.display = 'block';
+      if (accountInfo) accountInfo.textContent = '📧 ' + user.email;
       // Recriar tabela respeitando permissão
       if (typeof montarTabela === 'function') montarTabela();
       await syncUserProfile(user);
@@ -756,6 +883,8 @@
       window._isAdmin = false;
       const btnAdm = document.getElementById('btn-adm-config');
       if (btnAdm) btnAdm.style.display = 'none';
+      const logoutArea = document.getElementById('config-logout-area');
+      if (logoutArea) logoutArea.style.display = 'none';
       if (typeof montarTabela === 'function') montarTabela();
       mostrarPainelLogin();
     }
@@ -781,18 +910,20 @@
     socialUserData = {...(snap.exists()?snap.data():{}), ...data};
   }
 
-  function mostrarRecuperarSenha() {
+  window.mostrarRecuperarSenha = function() {
     document.getElementById('social-recover-panel').style.display = 'block';
     document.getElementById('social-recover-msg').style.display = 'none';
+    // Preencher com email salvo ou digitado
+    const saved = localStorage.getItem('mq_saved_email') || '';
     const emailInput = document.getElementById('social-email');
     const recoverInput = document.getElementById('social-recover-email');
-    if (emailInput && emailInput.value) recoverInput.value = emailInput.value;
-  }
-  function ocultarRecuperarSenha() {
+    recoverInput.value = (emailInput && emailInput.value) ? emailInput.value : saved;
+  };
+  window.ocultarRecuperarSenha = function() {
     document.getElementById('social-recover-panel').style.display = 'none';
     document.getElementById('social-recover-msg').style.display = 'none';
-  }
-  async function enviarRecuperacaoSenha() {
+  };
+  window.enviarRecuperacaoSenha = async function() {
     const email = document.getElementById('social-recover-email').value.trim();
     const msgEl = document.getElementById('social-recover-msg');
     if (!email) {
@@ -804,7 +935,11 @@
       return;
     }
     try {
-      await sendPasswordResetEmail(auth, email);
+      const actionSettings = {
+        url: window.location.origin + '/reset-password.html',
+        handleCodeInApp: false,
+      };
+      await sendPasswordResetEmail(auth, email, actionSettings);
       msgEl.style.display = 'block';
       msgEl.style.background = 'rgba(26,188,156,.08)';
       msgEl.style.border = '1px solid rgba(46,204,113,.3)';
@@ -822,10 +957,16 @@
       };
       msgEl.textContent = erros[e.code] || 'Erro ao enviar. Tente novamente.';
     }
-  }
+  };
 
   function mostrarPainelLogin() {
     document.getElementById('social-panel-login').style.display = '';
+    // Preencher email salvo
+    const savedEmail = localStorage.getItem('mq_saved_email');
+    if (savedEmail) {
+      const emailEl = document.getElementById('social-email');
+      if (emailEl && !emailEl.value) emailEl.value = savedEmail;
+    }
     document.getElementById('social-login-header').style.display = 'none';
     document.getElementById('social-footer-login').style.display = 'flex';
     document.getElementById('social-footer-logado').style.display = 'none';
@@ -836,6 +977,7 @@
   }
 
   function mostrarPainelLogado() {
+    atualizarTagDisplay();
     document.getElementById('social-panel-login').style.display = 'none';
     document.getElementById('social-tabs').style.display = 'flex';
     document.getElementById('social-login-header').style.display = '';
@@ -862,6 +1004,7 @@
     loadEl.style.display='';
     try {
       await signInWithEmailAndPassword(auth, email, pass);
+      localStorage.setItem('mq_saved_email', email);
     } catch(e) {
       loadEl.style.display='none';
       errEl.textContent = traduzirErroAuth(e.code);
@@ -888,10 +1031,22 @@
     }
   };
 
+  window.sairDaContaConfig = async function() {
+    fecharModal('modal-configuracoes');
+    await signOut(auth);
+    showToast('Conta desconectada.', 'red', 2500);
+  };
+
   window.socialLogout = async function() {
+    fecharModal('modal-social');
+    abrirModal('modal-confirmar-sair');
+  };
+  window.confirmarSairApp = async function() {
+    fecharModal('modal-confirmar-sair');
     socialUnsubs.forEach(u=>u());
     socialUnsubs=[];
     await signOut(auth);
+    if(typeof showToast==='function') showToast('Até logo! 👋', 'amber', 2500);
   };
 
   function traduzirErroAuth(code) {
@@ -946,40 +1101,48 @@
   async function carregarRanking() {
     if(!socialUser) return;
     const el = document.getElementById('social-ranking-list');
-    el.innerHTML = '<div style="text-align:center;padding:20px;font-family:var(--font-vt);color:var(--ink-f)"><span class="spinner"></span> Carregando...</div>';
-    // Pegar IDs dos amigos
-    const fSnap = await getDocs(collection(db,'users',socialUser.uid,'friends'));
-    const fids = fSnap.docs.map(d=>d.id);
-    const allIds = [socialUser.uid, ...fids];
-    if(allIds.length < 1) { el.innerHTML='<div style="text-align:center;padding:24px;font-family:var(--font-vt);color:var(--ink-f)">Adicione amigos para ver o ranking!</div>'; return; }
-    const players = [];
-    for(const uid of allIds) {
-      const us = await getDoc(doc(db,'users',uid));
-      if(us.exists()) players.push({uid,...us.data()});
-    }
-    players.sort((a,b)=>(b.totalXP||0)-(a.totalXP||0));
-    el.innerHTML = players.map((p,i) => {
-      const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="font-family:var(--font-vt);color:var(--ink-m)">#${i+1}</span>`;
-      const isMe = p.uid===socialUser.uid;
-      return `<div class="social-card" style="${isMe?'border-color:var(--amber);':''}">
+    el.innerHTML = '<div style="text-align:center;padding:20px;font-family:var(--font-vt);color:var(--ink-f)"><span class="spinner"></span> Carregando top 10...</div>';
+    try {
+      // Top 10 global por XP
+      const topSnap = await getDocs(query(collection(db,'users'), orderBy('totalXP','desc'), limit(10)));
+      const players = topSnap.docs.map(d=>({uid:d.id,...d.data()}));
+      if(!players.length) { el.innerHTML='<div style="text-align:center;padding:24px;font-family:var(--font-vt);color:var(--ink-f)">Nenhum jogador encontrado ainda.</div>'; return; }
+      // Verificar posição do usuário atual
+      let myRank = players.findIndex(p=>p.uid===socialUser.uid);
+      el.innerHTML = '<div style="font-family:var(--font-pixel);font-size:.28rem;color:var(--amber-l);letter-spacing:.08em;padding:0 0 8px;border-bottom:1px solid var(--line-s);margin-bottom:8px;text-align:center">🏆 TOP 10 GLOBAL</div>';
+      el.innerHTML += players.map((p,i) => {
+        const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="font-family:var(--font-vt);font-size:1rem;color:var(--ink-m)">#${i+1}</span>`;
+        const isMe = p.uid===socialUser.uid;
+        const glow = i===0?'0 0 12px rgba(255,215,0,.3)':i===1?'0 0 10px rgba(192,192,192,.2)':i===2?'0 0 8px rgba(205,127,50,.2)':'none';
+        return `<div class="social-card" style="${isMe?'border-color:var(--amber);background:rgba(243,156,18,.05);':''}box-shadow:${glow}">
         <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:1.2rem;min-width:24px;text-align:center">${medal}</span>
-          <canvas width="36" height="36" style="image-rendering:pixelated;border:1px solid ${isMe?'var(--amber)':'var(--line-s)'};border-radius:2px" data-av="${p.avatar||'rookie_m'}"></canvas>
+          <span style="font-size:1.2rem;min-width:26px;text-align:center">${medal}</span>
+          <canvas width="36" height="36" style="image-rendering:pixelated;border:1px solid ${isMe?'var(--amber)':'var(--line-s)'};border-radius:2px;flex-shrink:0" data-av="${p.avatar||'rookie_m'}"></canvas>
           <div style="flex:1;min-width:0">
-            <div style="font-family:var(--font-pixel);font-size:.38rem;color:${isMe?'var(--amber-l)':'var(--ink)'};">${p.displayName||'?'}${isMe?' (você)':''}</div>
-            <div style="font-family:var(--font-vt);font-size:.82rem;color:var(--ink-f)">#${p.tag||'????'}</div>
+            <div style="font-family:var(--font-pixel);font-size:.38rem;color:${isMe?'var(--amber-l)':'var(--ink)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.displayName||'?'}${isMe?' ◀':''}</div>
+            <div style="font-family:var(--font-vt);font-size:.8rem;color:var(--ink-f)">#${p.tag||'????'}</div>
           </div>
           <div style="text-align:right;flex-shrink:0">
-            <div style="font-family:var(--font-pixel);font-size:.34rem;color:var(--amber-l)">${p.totalXP||0} XP</div>
+            <div style="font-family:var(--font-pixel);font-size:.34rem;color:var(--amber-l)">${(p.totalXP||0).toLocaleString()} XP</div>
             <div style="font-family:var(--font-vt);font-size:.78rem;color:var(--ink-m)">LVL ${p.level||1}</div>
           </div>
         </div>
       </div>`;
-    }).join('');
-    // Renderizar avatares
-    el.querySelectorAll('canvas[data-av]').forEach(cv=>{
-      if(typeof drawAvatar==='function') drawAvatar(cv.getContext('2d'), cv.dataset.av, 36);
-    });
+      }).join('');
+      // Se o usuário não estiver no top 10, mostrar sua posição abaixo
+      if(myRank === -1) {
+        const mySnap = await getDoc(doc(db,'users',socialUser.uid));
+        if(mySnap.exists()) {
+          const myData = mySnap.data();
+          el.innerHTML += `<div style="margin-top:8px;padding:8px 10px;border:1px dashed var(--line-s);border-radius:2px;font-family:var(--font-vt);font-size:.9rem;color:var(--ink-f);text-align:center">Você não está no top 10 ainda — ${myData.totalXP||0} XP</div>`;
+        }
+      }
+      el.querySelectorAll('canvas[data-av]').forEach(cv=>{
+        if(typeof drawAvatar==='function') drawAvatar(cv.getContext('2d'), cv.dataset.av, 36);
+      });
+    } catch(e) {
+      el.innerHTML='<div style="text-align:center;padding:24px;font-family:var(--font-vt);color:#fca5a5">Erro ao carregar ranking.</div>';
+    }
   }
 
   // ── PEDIDOS ──────────────────────────────────────────
@@ -1216,11 +1379,36 @@
     document.getElementById('modal-perfil-amigo').classList.add('ativo');
   };
 
+  let _xpGiftTargetUid = null;
   window.abrirEnviarXP = function(toUid, nome) {
-    const amount = prompt(`Quantos XP quer dar para ${nome}? (máx: 50)`);
-    if(!amount || isNaN(amount) || +amount<=0) return;
-    const v = Math.min(50, Math.abs(parseInt(amount)));
-    enviarXPDireto(toUid, v);
+    _xpGiftTargetUid = toUid;
+    document.getElementById('enviar-xp-nome').textContent = '→ ' + nome;
+    document.getElementById('enviar-xp-meu').textContent = (typeof xpData !== 'undefined' ? xpData.totalXP : 0) + ' XP';
+    document.getElementById('enviar-xp-valor').value = '';
+    document.getElementById('enviar-xp-erro').style.display = 'none';
+    abrirModal('modal-enviar-xp');
+  };
+  window.definirQtdXP = function(v) {
+    document.getElementById('enviar-xp-valor').value = v;
+    document.getElementById('enviar-xp-erro').style.display = 'none';
+  };
+  window.confirmarEnvioXP = async function() {
+    const val = parseInt(document.getElementById('enviar-xp-valor').value);
+    const erroEl = document.getElementById('enviar-xp-erro');
+    const meuXP = typeof xpData !== 'undefined' ? xpData.totalXP : 0;
+    if (!val || val <= 0) {
+      erroEl.style.display = 'block'; erroEl.textContent = 'Digite um valor válido.'; return;
+    }
+    if (val > meuXP) {
+      erroEl.style.display = 'block'; erroEl.textContent = 'XP insuficiente! Você tem ' + meuXP + ' XP.'; return;
+    }
+    if (val > 500) {
+      erroEl.style.display = 'block'; erroEl.textContent = 'Máximo de 500 XP por envio.'; return;
+    }
+    fecharModal('modal-enviar-xp');
+    await enviarXPDireto(_xpGiftTargetUid, val);
+    // Atualizar display do meu XP no modal caso reabra
+    document.getElementById('enviar-xp-meu').textContent = (typeof xpData !== 'undefined' ? xpData.totalXP : 0) + ' XP';
   };
 
   async function enviarXPDireto(toUid, amount) {
